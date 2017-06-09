@@ -1660,6 +1660,12 @@
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="2" column="3">
        <widget class="QPushButton" name="leftButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -1699,6 +1705,12 @@
       </item>
       <item row="2" column="4">
        <widget class="QPushButton" name="downButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -1732,6 +1744,12 @@
       </item>
       <item row="2" column="5">
        <widget class="QPushButton" name="rightButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -1742,6 +1760,12 @@
       </item>
       <item row="1" column="4">
        <widget class="QPushButton" name="upButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string/>
         </property>
