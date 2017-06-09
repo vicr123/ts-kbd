@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/sounds">
+        <file>keyclickErase.wav</file>
+        <file>keyclick.wav</file>
+    </qresource>
+</RCC>
