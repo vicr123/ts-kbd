@@ -1,0 +1,9 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=theShell On Screen Keyboard
+GenericName=On Screen Keyboard
+Exec=ts-kbd
+Icon=ts-kbd
+NotShowIn=theshell;
