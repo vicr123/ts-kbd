@@ -114,6 +114,7 @@ KeyboardWindow::~KeyboardWindow()
 }
 
 void KeyboardWindow::buttonIterate(QWidget* wid) {
+    wid->setAttribute(Qt::WA_AcceptTouchEvents);
     for (QObject* widget : wid->children()) {
         if ((QPushButton*) widget != NULL) {
             connect((QPushButton*) widget, SIGNAL(clicked(bool)), this, SLOT(pressKey()));
