@@ -45,8 +45,12 @@ private slots:
 
     void on_tabButton_clicked();
 
+    void on_shift_clicked(bool checked);
+
 private:
     Ui::KeyboardWindow *ui;
+
+    bool capsLock = false;
 
     bool event(QEvent *event);
     bool eventFilter(QObject *obj, QEvent *event);

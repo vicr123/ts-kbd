@@ -22,6 +22,7 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
     ui->otherKeyboardsFrame->setGeometry(0, this->height(), this->width(), this->height());
 
     ui->otherKeyboardsFrame->installEventFilter(this);
+    ui->shift->installEventFilter(this);
 
     QFont fnt = this->font();
     ui->otherKeyboardsFrame->setFont(fnt);
@@ -33,6 +34,8 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
     buttonIterate(ui->symbolPage);
     buttonIterate(ui->bottomFrame);
     buttonIterate(ui->otherKeyboardsFrame);
+
+    ui->shift->setAttribute(Qt::WA_AcceptTouchEvents, false);
 
     connect(ui->shift, &QPushButton::toggled, [=](bool checked) {
         if (checked) {
@@ -281,7 +284,10 @@ void KeyboardWindow::pressKey() {
 
     ui->altKey->setChecked(false);
     ui->ctrlKey->setChecked(false);
-    ui->shift->setChecked(false);
+
+    if (!capsLock) {
+        ui->shift->setChecked(false);
+    }
 
     QSoundEffect* keySound = new QSoundEffect();
     keySound->setSource(QUrl("qrc:/sounds/keyclick.wav"));
@@ -456,7 +462,14 @@ bool KeyboardWindow::eventFilter(QObject *obj, QEvent *event) {
         } else {
             return false;
         }
+    } else if (obj == ui->shift) {
+        if (event->type() == QEvent::MouseButtonDblClick) {
+            capsLock = true;
+            ui->shift->setChecked(true);
+            return true;
+        }
     }
+    return false;
 }
 
 void KeyboardWindow::on_ctrlKey_clicked()
@@ -490,4 +503,9 @@ void KeyboardWindow::on_tabButton_clicked()
     anim->setEasingCurve(QEasingCurve::OutCubic);
     connect(anim, SIGNAL(finished()), anim, SLOT(deleteLater()));
     anim->start();
+}
+
+void KeyboardWindow::on_shift_clicked(bool checked)
+{
+    capsLock = false;
 }
