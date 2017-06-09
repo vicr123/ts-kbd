@@ -24,6 +24,7 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
     ui->otherKeyboardsFrame->installEventFilter(this);
 
     QFont fnt = this->font();
+    ui->otherKeyboardsFrame->setFont(fnt);
     fnt.setPointSize(20);
     this->setFont(fnt);
 
@@ -174,6 +175,46 @@ void KeyboardWindow::pressKey() {
         pressedKey = XK_Left;
     } else if (button == ui->rightButton) {
         pressedKey = XK_Right;
+    } else if (button == ui->insertKey) {
+        pressedKey = XK_Insert;
+    } else if (button == ui->homeKey) {
+        pressedKey = XK_Home;
+    } else if (button == ui->endKey) {
+        pressedKey = XK_End;
+    } else if (button == ui->deleteKey) {
+        pressedKey = XK_Delete;
+    } else if (button == ui->pgUpKey) {
+        pressedKey = XK_Page_Up;
+    } else if (button == ui->pgDownKey) {
+        pressedKey = XK_Page_Down;
+    } else if (button == ui->numpadEnter) {
+        pressedKey = XK_KP_Enter;
+    } else if (button == ui->escKey) {
+        pressedKey = XK_Escape;
+    } else if (button == ui->f1Key) {
+        pressedKey = XK_F1;
+    } else if (button == ui->f2Key) {
+        pressedKey = XK_F2;
+    } else if (button == ui->f3Key) {
+        pressedKey = XK_F3;
+    } else if (button == ui->f4Key) {
+        pressedKey = XK_F4;
+    } else if (button == ui->f5Key) {
+        pressedKey = XK_F5;
+    } else if (button == ui->f6Key) {
+        pressedKey = XK_F6;
+    } else if (button == ui->f7Key) {
+        pressedKey = XK_F7;
+    } else if (button == ui->f8Key) {
+        pressedKey = XK_F8;
+    } else if (button == ui->f9Key) {
+        pressedKey = XK_F9;
+    } else if (button == ui->f10Key) {
+        pressedKey = XK_F10;
+    } else if (button == ui->f11Key) {
+        pressedKey = XK_F11;
+    } else if (button == ui->f12Key) {
+        pressedKey = XK_F12;
     } else {
         QString keycode = button->text().toUtf8().toHex();
 
