@@ -410,7 +410,7 @@ bool KeyboardWindow::event(QEvent *event) {
             if (point.startPos().y() > this->height() - 10) {
                 tPropertyAnimation* anim = new tPropertyAnimation(ui->otherKeyboardsFrame, "geometry");
                 anim->setStartValue(ui->otherKeyboardsFrame->geometry());
-                if (point.pos().y() > this->height() / 2) { //Cancel it
+                if (point.pos().y() > this->height() - 30) { //Cancel it
                     anim->setEndValue(QRect(0, this->height(), this->width(), this->height()));
                 } else {
                     anim->setEndValue(QRect(0, 0, this->width(), this->height()));
@@ -466,6 +466,11 @@ bool KeyboardWindow::eventFilter(QObject *obj, QEvent *event) {
         if (event->type() == QEvent::MouseButtonDblClick) {
             capsLock = true;
             ui->shift->setChecked(true);
+
+            QSoundEffect* keySound = new QSoundEffect();
+            keySound->setSource(QUrl("qrc:/sounds/keyclick.wav"));
+            keySound->play();
+            connect(keySound, SIGNAL(playingChanged()), keySound, SLOT(deleteLater()));
             return true;
         }
     }
