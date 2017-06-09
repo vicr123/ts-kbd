@@ -13,7 +13,7 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
     ui->setupUi(this);
 
     this->setAttribute(Qt::WA_AcceptTouchEvents);
-    ui->modifierKeys->setAttribute(Qt::WA_AcceptTouchEvents);
+    //ui->modifierKeys->setAttribute(Qt::WA_AcceptTouchEvents);
 
     this->layout()->removeWidget(ui->otherKeyboardsFrame);
     this->layout()->removeWidget(ui->modifierKeys);
@@ -324,7 +324,7 @@ bool KeyboardWindow::event(QEvent *event) {
     if (event->type() == QEvent::TouchBegin) {
         QTouchEvent* e = (QTouchEvent*) event;
         if (e->touchPoints().count() == 1) {
-            if (e->touchPoints().first().startPos().y() > this->height() - 10 || e->touchPoints().first().startPos().x() < 10) {
+            if (e->touchPoints().first().startPos().y() > this->height() - 10 || e->touchPoints().first().startPos().x() < 30) {
                 e->accept();
             } else {
                 e->ignore();
@@ -339,7 +339,7 @@ bool KeyboardWindow::event(QEvent *event) {
             QTouchEvent::TouchPoint point = e->touchPoints().first();
             if (point.startPos().y() > this->height() - 10) {
                 ui->otherKeyboardsFrame->move(0, point.pos().y());
-            } else if (point.startPos().x() < 10) {
+            } else if (point.startPos().x() < 30) {
                 int left = point.pos().x() - 400;
                 if (left > 0) {
                     left = 0;
@@ -368,7 +368,7 @@ bool KeyboardWindow::event(QEvent *event) {
                 anim->setEasingCurve(QEasingCurve::OutCubic);
                 connect(anim, SIGNAL(finished()), anim, SLOT(deleteLater()));
                 anim->start();
-            } else if (e->touchPoints().first().startPos().x() < 10) {
+            } else if (e->touchPoints().first().startPos().x() < 30) {
                 tPropertyAnimation* anim = new tPropertyAnimation(ui->modifierKeys, "geometry");
                 anim->setStartValue(ui->modifierKeys->geometry());
                 if (point.pos().x() < 200) { //Cancel it
@@ -394,44 +394,31 @@ bool KeyboardWindow::event(QEvent *event) {
 
 bool KeyboardWindow::eventFilter(QObject *obj, QEvent *event) {
     if (obj == ui->modifierKeys) {
-        if (event->type() == QEvent::TouchBegin) {
-            QTouchEvent* e = (QTouchEvent*) event;
-            if (e->touchPoints().count() == 1) {
-                e->accept();
-            } else {
-                e->ignore();
-            }
+        if (event->type() == QEvent::MouseButtonPress) {
+            QMouseEvent* e = (QMouseEvent*) event;
+            obj->setProperty("startDragPos", e->pos());
             return true;
-        } else if (event->type() == QEvent::TouchUpdate) {
-            QTouchEvent* e = (QTouchEvent*) event;
-            if (e->touchPoints().count() == 1) {
-                QTouchEvent::TouchPoint point = e->touchPoints().first();
-                int left = ui->modifierKeys->mapTo(this, point.pos().toPoint()).x() + point.startPos().x() - 400;
-                if (left > 0) {
-                    left = 0;
-                }
-                ui->modifierKeys->move(left, 0);
-            } else {
-                e->ignore();
+        } else if (event->type() == QEvent::MouseMove) {
+            QMouseEvent* e = (QMouseEvent*) event;
+            int left = ui->modifierKeys->mapTo(this, e->pos()).x() - obj->property("startDragPos").toPoint().x();
+            if (left > 0) {
+                left = 0;
             }
+            ui->modifierKeys->move(left, 0);
             return true;
-        } else if (event->type() == QEvent::TouchEnd) {
-            QTouchEvent* e = (QTouchEvent*) event;
-            if (e->touchPoints().count() == 1) {
-                tPropertyAnimation* anim = new tPropertyAnimation(ui->modifierKeys, "geometry");
-                anim->setStartValue(ui->modifierKeys->geometry());
-                if (ui->modifierKeys->x() + ui->modifierKeys->width() < 200) { //Cancel it
-                    anim->setEndValue(QRect(-400, 0, 400, this->height()));
-                } else {
-                    anim->setEndValue(QRect(0, 0, 400, this->height()));
-                }
-                anim->setDuration(250);
-                anim->setEasingCurve(QEasingCurve::OutCubic);
-                connect(anim, SIGNAL(finished()), anim, SLOT(deleteLater()));
-                anim->start();
+        } else if (event->type() == QEvent::MouseButtonRelease) {
+            QMouseEvent* e = (QMouseEvent*) event;
+            tPropertyAnimation* anim = new tPropertyAnimation(ui->modifierKeys, "geometry");
+            anim->setStartValue(ui->modifierKeys->geometry());
+            if (ui->modifierKeys->x() + ui->modifierKeys->width() < 200) { //Cancel it
+                anim->setEndValue(QRect(-400, 0, 400, this->height()));
             } else {
-                e->ignore();
+                anim->setEndValue(QRect(0, 0, 400, this->height()));
             }
+            anim->setDuration(250);
+            anim->setEasingCurve(QEasingCurve::OutCubic);
+            connect(anim, SIGNAL(finished()), anim, SLOT(deleteLater()));
+            anim->start();
             return true;
         } else {
             return false;
