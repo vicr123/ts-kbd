@@ -95,6 +95,17 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
     closeButton->setGeometry(this->geometry().right() - 38, 6, 32, 32);
     closeButton->setFlat(true);
     connect(closeButton, SIGNAL(clicked(bool)), this, SLOT(close()));*/
+
+    QSystemTrayIcon* trayIcon = new QSystemTrayIcon();
+    trayIcon->setIcon(QIcon::fromTheme("preferences-desktop-keyboard"));
+    connect(trayIcon, &QSystemTrayIcon::activated, [=](QSystemTrayIcon::ActivationReason reason) {
+        if (this->isVisible()) {
+            this->hide();
+        } else {
+            this->show();
+        }
+    });
+    trayIcon->show();
 }
 
 KeyboardWindow::~KeyboardWindow()
@@ -114,8 +125,7 @@ void KeyboardWindow::buttonIterate(QWidget* wid) {
 
 void KeyboardWindow::pressKey() {
     QPushButton* button = (QPushButton*) sender();
-    qDebug() << "Key Pressed was " + button->text();
-    if (button == ui->shift || button == ui->changeButton) return; //Ignore SHIFT and change key
+    if (button == ui->shift || button == ui->changeButton || button == ui->hideKeyboard) return; //Ignore SHIFT, change and hide key
 
     Window focused;
     int revert_to;
@@ -251,7 +261,7 @@ void KeyboardWindow::on_changeButton_clicked() {
 
 void KeyboardWindow::on_hideKeyboard_clicked()
 {
-    this->close();
+    this->hide();
 
     QSoundEffect* keySound = new QSoundEffect();
     keySound->setSource(QUrl("qrc:/sounds/keyclickErase.wav"));

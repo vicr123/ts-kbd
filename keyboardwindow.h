@@ -11,6 +11,7 @@
 #include <QByteArray>
 #include <QPushButton>
 #include <QStackedWidget>
+#include <QSystemTrayIcon>
 
 namespace Ui {
 class KeyboardWindow;
