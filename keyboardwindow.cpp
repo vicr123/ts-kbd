@@ -16,15 +16,12 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
     //ui->modifierKeys->setAttribute(Qt::WA_AcceptTouchEvents);
 
     this->layout()->removeWidget(ui->otherKeyboardsFrame);
-    this->layout()->removeWidget(ui->modifierKeys);
     this->setFixedHeight(this->sizeHint().height());
 
     ui->otherKeyboardsFrame->setParent(this);
     ui->otherKeyboardsFrame->setGeometry(0, this->height(), this->width(), this->height());
-    ui->modifierKeys->setParent(this);
-    ui->modifierKeys->setGeometry(-400, 0, 400, this->height());
 
-    ui->modifierKeys->installEventFilter(this);
+    ui->otherKeyboardsFrame->installEventFilter(this);
 
     QFont fnt = this->font();
     fnt.setPointSize(20);
@@ -34,7 +31,7 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
     buttonIterate(ui->alphaPage);
     buttonIterate(ui->symbolPage);
     buttonIterate(ui->bottomFrame);
-    buttonIterate(ui->modifierKeys);
+    buttonIterate(ui->otherKeyboardsFrame);
 
     connect(ui->shift, &QPushButton::toggled, [=](bool checked) {
         if (checked) {
@@ -169,6 +166,14 @@ void KeyboardWindow::pressKey() {
         pressedKey = XK_7;
     } else if (button == ui->tabButton) {
         pressedKey = XK_Tab;
+    } else if (button == ui->upButton) {
+        pressedKey = XK_Up;
+    } else if (button == ui->downButton) {
+        pressedKey = XK_Down;
+    } else if (button == ui->leftButton) {
+        pressedKey = XK_Left;
+    } else if (button == ui->rightButton) {
+        pressedKey = XK_Right;
     } else {
         QString keycode = button->text().toUtf8().toHex();
 
@@ -339,12 +344,6 @@ bool KeyboardWindow::event(QEvent *event) {
             QTouchEvent::TouchPoint point = e->touchPoints().first();
             if (point.startPos().y() > this->height() - 10) {
                 ui->otherKeyboardsFrame->move(0, point.pos().y());
-            } else if (point.startPos().x() < 30) {
-                int left = point.pos().x() - 400;
-                if (left > 0) {
-                    left = 0;
-                }
-                ui->modifierKeys->move(left, 0);
             } else {
                 e->ignore();
             }
@@ -368,18 +367,6 @@ bool KeyboardWindow::event(QEvent *event) {
                 anim->setEasingCurve(QEasingCurve::OutCubic);
                 connect(anim, SIGNAL(finished()), anim, SLOT(deleteLater()));
                 anim->start();
-            } else if (e->touchPoints().first().startPos().x() < 30) {
-                tPropertyAnimation* anim = new tPropertyAnimation(ui->modifierKeys, "geometry");
-                anim->setStartValue(ui->modifierKeys->geometry());
-                if (point.pos().x() < 200) { //Cancel it
-                    anim->setEndValue(QRect(-400, 0, 400, this->height()));
-                } else {
-                    anim->setEndValue(QRect(0, 0, 400, this->height()));
-                }
-                anim->setDuration(250);
-                anim->setEasingCurve(QEasingCurve::OutCubic);
-                connect(anim, SIGNAL(finished()), anim, SLOT(deleteLater()));
-                anim->start();
             } else {
                 e->ignore();
             }
@@ -393,27 +380,27 @@ bool KeyboardWindow::event(QEvent *event) {
 }
 
 bool KeyboardWindow::eventFilter(QObject *obj, QEvent *event) {
-    if (obj == ui->modifierKeys) {
+    if (obj == ui->otherKeyboardsFrame) {
         if (event->type() == QEvent::MouseButtonPress) {
             QMouseEvent* e = (QMouseEvent*) event;
             obj->setProperty("startDragPos", e->pos());
             return true;
         } else if (event->type() == QEvent::MouseMove) {
             QMouseEvent* e = (QMouseEvent*) event;
-            int left = ui->modifierKeys->mapTo(this, e->pos()).x() - obj->property("startDragPos").toPoint().x();
-            if (left > 0) {
-                left = 0;
+            int bottom = ui->otherKeyboardsFrame->mapTo(this, e->pos()).y() - obj->property("startDragPos").toPoint().y();
+            if (bottom > 0) {
+                bottom = 0;
             }
-            ui->modifierKeys->move(left, 0);
+            ui->otherKeyboardsFrame->move(bottom, 0);
             return true;
         } else if (event->type() == QEvent::MouseButtonRelease) {
             QMouseEvent* e = (QMouseEvent*) event;
-            tPropertyAnimation* anim = new tPropertyAnimation(ui->modifierKeys, "geometry");
-            anim->setStartValue(ui->modifierKeys->geometry());
-            if (ui->modifierKeys->x() + ui->modifierKeys->width() < 200) { //Cancel it
-                anim->setEndValue(QRect(-400, 0, 400, this->height()));
+            tPropertyAnimation* anim = new tPropertyAnimation(ui->otherKeyboardsFrame, "geometry");
+            anim->setStartValue(ui->otherKeyboardsFrame->geometry());
+            if (ui->otherKeyboardsFrame->y() + ui->otherKeyboardsFrame->height() > this->height() / 2) { //Cancel it
+                anim->setEndValue(QRect(0, this->height(), this->width(), this->height()));
             } else {
-                anim->setEndValue(QRect(0, 0, 400, this->height()));
+                anim->setEndValue(QRect(0, 0, this->width(), this->height()));
             }
             anim->setDuration(250);
             anim->setEasingCurve(QEasingCurve::OutCubic);
@@ -428,8 +415,8 @@ bool KeyboardWindow::eventFilter(QObject *obj, QEvent *event) {
 
 void KeyboardWindow::on_ctrlKey_clicked()
 {
-    tPropertyAnimation* anim = new tPropertyAnimation(ui->modifierKeys, "geometry");
-    anim->setStartValue(ui->modifierKeys->geometry());
+    tPropertyAnimation* anim = new tPropertyAnimation(ui->otherKeyboardsFrame, "geometry");
+    anim->setStartValue(ui->otherKeyboardsFrame->geometry());
     anim->setEndValue(QRect(-400, 0, 400, this->height()));
     anim->setDuration(250);
     anim->setEasingCurve(QEasingCurve::OutCubic);
@@ -439,8 +426,8 @@ void KeyboardWindow::on_ctrlKey_clicked()
 
 void KeyboardWindow::on_altKey_clicked()
 {
-    tPropertyAnimation* anim = new tPropertyAnimation(ui->modifierKeys, "geometry");
-    anim->setStartValue(ui->modifierKeys->geometry());
+    tPropertyAnimation* anim = new tPropertyAnimation(ui->otherKeyboardsFrame, "geometry");
+    anim->setStartValue(ui->otherKeyboardsFrame->geometry());
     anim->setEndValue(QRect(-400, 0, 400, this->height()));
     anim->setDuration(250);
     anim->setEasingCurve(QEasingCurve::OutCubic);
@@ -450,8 +437,8 @@ void KeyboardWindow::on_altKey_clicked()
 
 void KeyboardWindow::on_tabButton_clicked()
 {
-    tPropertyAnimation* anim = new tPropertyAnimation(ui->modifierKeys, "geometry");
-    anim->setStartValue(ui->modifierKeys->geometry());
+    tPropertyAnimation* anim = new tPropertyAnimation(ui->otherKeyboardsFrame, "geometry");
+    anim->setStartValue(ui->otherKeyboardsFrame->geometry());
     anim->setEndValue(QRect(-400, 0, 400, this->height()));
     anim->setDuration(250);
     anim->setEasingCurve(QEasingCurve::OutCubic);
