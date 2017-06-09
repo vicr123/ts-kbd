@@ -12,6 +12,10 @@
 #include <QPushButton>
 #include <QStackedWidget>
 #include <QSystemTrayIcon>
+#include <QEvent>
+#include <QGestureEvent>
+#include <tpropertyanimation.h>
+#include <QLayout>
 
 namespace Ui {
 class KeyboardWindow;
@@ -35,8 +39,17 @@ private slots:
 
     void on_hideKeyboard_clicked();
 
+    void on_ctrlKey_clicked();
+
+    void on_altKey_clicked();
+
+    void on_tabButton_clicked();
+
 private:
     Ui::KeyboardWindow *ui;
+
+    bool event(QEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event);
 };
 
 #endif // KEYBOARDWINDOW_H

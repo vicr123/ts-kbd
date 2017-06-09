@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>874</width>
-    <height>290</height>
+    <width>880</width>
+    <height>510</height>
    </rect>
+  </property>
+  <property name="baseSize">
+   <size>
+    <width>880</width>
+    <height>290</height>
+   </size>
   </property>
   <property name="font">
    <font>
@@ -436,7 +442,8 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset theme="input-caps-on"/>
+            <iconset theme="input-caps-on">
+             <normaloff>.</normaloff>.</iconset>
            </property>
            <property name="checkable">
             <bool>true</bool>
@@ -570,7 +577,8 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset theme="go-previous"/>
+            <iconset theme="go-previous">
+             <normaloff>.</normaloff>.</iconset>
            </property>
            <property name="flat">
             <bool>true</bool>
@@ -988,7 +996,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset theme="go-previous"/>
+          <iconset theme="go-previous">
+           <normaloff>.</normaloff>.</iconset>
          </property>
          <property name="flat">
           <bool>true</bool>
@@ -1561,7 +1570,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string> </string>
+         <string/>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -1601,7 +1610,8 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset theme="go-down"/>
+         <iconset theme="go-down">
+          <normaloff>.</normaloff>.</iconset>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -1625,10 +1635,113 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset theme="key-enter"/>
+         <iconset theme="key-enter">
+          <normaloff>.</normaloff>.</iconset>
         </property>
         <property name="flat">
          <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="otherKeyboardsFrame">
+     <property name="autoFillBackground">
+      <bool>true</bool>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="font">
+         <font>
+          <pointsize>20</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Keyboards</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_7">
+        <property name="text">
+         <string>QWERTY</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_43">
+        <property name="text">
+         <string>Numeric</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_44">
+        <property name="text">
+         <string>Something else</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="modifierKeys">
+     <property name="autoFillBackground">
+      <bool>true</bool>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="font">
+         <font>
+          <pointsize>20</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Modifiers</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QPushButton" name="ctrlKey">
+        <property name="text">
+         <string>CTRL</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QPushButton" name="altKey">
+        <property name="text">
+         <string>ALT</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QPushButton" name="tabButton">
+        <property name="text">
+         <string>TAB</string>
         </property>
        </widget>
       </item>

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui x11extras multimedia
+QT       += core gui x11extras multimedia thelib
 CONFIG   += c++14
 LIBS     += -lX11 -lXtst
 

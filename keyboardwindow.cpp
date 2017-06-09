@@ -12,6 +12,20 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    this->setAttribute(Qt::WA_AcceptTouchEvents);
+    ui->modifierKeys->setAttribute(Qt::WA_AcceptTouchEvents);
+
+    this->layout()->removeWidget(ui->otherKeyboardsFrame);
+    this->layout()->removeWidget(ui->modifierKeys);
+    this->setFixedHeight(this->sizeHint().height());
+
+    ui->otherKeyboardsFrame->setParent(this);
+    ui->otherKeyboardsFrame->setGeometry(0, this->height(), this->width(), this->height());
+    ui->modifierKeys->setParent(this);
+    ui->modifierKeys->setGeometry(-400, 0, 400, this->height());
+
+    ui->modifierKeys->installEventFilter(this);
+
     QFont fnt = this->font();
     fnt.setPointSize(20);
     this->setFont(fnt);
@@ -20,6 +34,7 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
     buttonIterate(ui->alphaPage);
     buttonIterate(ui->symbolPage);
     buttonIterate(ui->bottomFrame);
+    buttonIterate(ui->modifierKeys);
 
     connect(ui->shift, &QPushButton::toggled, [=](bool checked) {
         if (checked) {
@@ -114,7 +129,7 @@ KeyboardWindow::~KeyboardWindow()
 }
 
 void KeyboardWindow::buttonIterate(QWidget* wid) {
-    wid->setAttribute(Qt::WA_AcceptTouchEvents);
+    //wid->setAttribute(Qt::WA_AcceptTouchEvents);
     for (QObject* widget : wid->children()) {
         if ((QPushButton*) widget != NULL) {
             connect((QPushButton*) widget, SIGNAL(clicked(bool)), this, SLOT(pressKey()));
@@ -126,7 +141,7 @@ void KeyboardWindow::buttonIterate(QWidget* wid) {
 
 void KeyboardWindow::pressKey() {
     QPushButton* button = (QPushButton*) sender();
-    if (button == ui->shift || button == ui->changeButton || button == ui->hideKeyboard) return; //Ignore SHIFT, change and hide key
+    if (button == ui->shift || button == ui->ctrlKey || button == ui->altKey || button == ui->changeButton || button == ui->hideKeyboard) return; //Ignore SHIFT, change and hide key
 
     Window focused;
     int revert_to;
@@ -152,6 +167,8 @@ void KeyboardWindow::pressKey() {
         pressedKey = XK_space;
     } else if (button == ui->ampButton) {
         pressedKey = XK_7;
+    } else if (button == ui->tabButton) {
+        pressedKey = XK_Tab;
     } else {
         QString keycode = button->text().toUtf8().toHex();
 
@@ -197,13 +214,27 @@ void KeyboardWindow::pressKey() {
     if (isShift || ui->shift->isChecked()) {
         XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Shift_L), true, 0);
     }
+    if (ui->ctrlKey->isChecked()) {
+        XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Control_L), true, 0);
+    }
+    if (ui->altKey->isChecked()) {
+        XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Alt_L), true, 0);
+    }
     XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), pressedKey), true, 0);
     XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), pressedKey), false, 0);
+    if (ui->altKey->isChecked()) {
+        XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Alt_L), false, 0);
+    }
+    if (ui->ctrlKey->isChecked()) {
+        XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Control_L), false, 0);
+    }
     if (isShift || ui->shift->isChecked()) {
         XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Shift_L), false, 0);
     }
     XFlush(QX11Info::display());
 
+    ui->altKey->setChecked(false);
+    ui->ctrlKey->setChecked(false);
     ui->shift->setChecked(false);
 
     QSoundEffect* keySound = new QSoundEffect();
@@ -214,6 +245,8 @@ void KeyboardWindow::pressKey() {
 
 
 void KeyboardWindow::show() {
+    this->setWindowFlags(Qt::Dialog | Qt::WindowStaysOnTopHint);
+
     Atom DesktopWindowTypeAtom;
     DesktopWindowTypeAtom = XInternAtom(QX11Info::display(), "_NET_WM_WINDOW_TYPE_DOCK", False);
     int retval = XChangeProperty(QX11Info::display(), this->winId(), XInternAtom(QX11Info::display(), "_NET_WM_WINDOW_TYPE", False),
@@ -224,6 +257,23 @@ void KeyboardWindow::show() {
                      XA_CARDINAL, 32, PropModeReplace, (unsigned char*) &desktop, 1); //Set visible on all desktops
 
     QDialog::show();
+
+    XEvent event;
+
+    event.xclient.type = ClientMessage;
+    event.xclient.serial = 0;
+    event.xclient.send_event = True;
+    event.xclient.message_type = XInternAtom(QX11Info::display(), "_NET_WM_STATE", False);
+    event.xclient.window = this->winId();
+    event.xclient.format = 32;
+    event.xclient.data.l[0] = 1;
+    event.xclient.data.l[1] = XInternAtom(QX11Info::display(), "_NET_WM_STATE_SKIP_TASKBAR", False);
+    event.xclient.data.l[2] = XInternAtom(QX11Info::display(), "_NET_WM_STATE_SKIP_PAGER", False);;
+    event.xclient.data.l[3] = 1;
+    event.xclient.data.l[4] = 0;
+
+    XSendEvent(QX11Info::display(), DefaultRootWindow(QX11Info::display()), False, SubstructureRedirectMask | SubstructureNotifyMask, &event);
+
 
     QRect screenGeometry = QApplication::desktop()->screenGeometry();
     long* struts = (long*) malloc(sizeof(long) * 12);
@@ -268,4 +318,156 @@ void KeyboardWindow::on_hideKeyboard_clicked()
     keySound->setSource(QUrl("qrc:/sounds/keyclickErase.wav"));
     keySound->play();
     connect(keySound, SIGNAL(playingChanged()), keySound, SLOT(deleteLater()));
+}
+
+bool KeyboardWindow::event(QEvent *event) {
+    if (event->type() == QEvent::TouchBegin) {
+        QTouchEvent* e = (QTouchEvent*) event;
+        if (e->touchPoints().count() == 1) {
+            if (e->touchPoints().first().startPos().y() > this->height() - 10 || e->touchPoints().first().startPos().x() < 10) {
+                e->accept();
+            } else {
+                e->ignore();
+            }
+        } else {
+            e->ignore();
+        }
+        return true;
+    } else if (event->type() == QEvent::TouchUpdate) {
+        QTouchEvent* e = (QTouchEvent*) event;
+        if (e->touchPoints().count() == 1) {
+            QTouchEvent::TouchPoint point = e->touchPoints().first();
+            if (point.startPos().y() > this->height() - 10) {
+                ui->otherKeyboardsFrame->move(0, point.pos().y());
+            } else if (point.startPos().x() < 10) {
+                int left = point.pos().x() - 400;
+                if (left > 0) {
+                    left = 0;
+                }
+                ui->modifierKeys->move(left, 0);
+            } else {
+                e->ignore();
+            }
+        } else {
+            e->ignore();
+        }
+        return true;
+    } else if (event->type() == QEvent::TouchEnd) {
+        QTouchEvent* e = (QTouchEvent*) event;
+        if (e->touchPoints().count() == 1) {
+            QTouchEvent::TouchPoint point = e->touchPoints().first();
+            if (point.startPos().y() > this->height() - 10) {
+                tPropertyAnimation* anim = new tPropertyAnimation(ui->otherKeyboardsFrame, "geometry");
+                anim->setStartValue(ui->otherKeyboardsFrame->geometry());
+                if (point.pos().y() > this->height() / 2) { //Cancel it
+                    anim->setEndValue(QRect(0, this->height(), this->width(), this->height()));
+                } else {
+                    anim->setEndValue(QRect(0, 0, this->width(), this->height()));
+                }
+                anim->setDuration(250);
+                anim->setEasingCurve(QEasingCurve::OutCubic);
+                connect(anim, SIGNAL(finished()), anim, SLOT(deleteLater()));
+                anim->start();
+            } else if (e->touchPoints().first().startPos().x() < 10) {
+                tPropertyAnimation* anim = new tPropertyAnimation(ui->modifierKeys, "geometry");
+                anim->setStartValue(ui->modifierKeys->geometry());
+                if (point.pos().x() < 200) { //Cancel it
+                    anim->setEndValue(QRect(-400, 0, 400, this->height()));
+                } else {
+                    anim->setEndValue(QRect(0, 0, 400, this->height()));
+                }
+                anim->setDuration(250);
+                anim->setEasingCurve(QEasingCurve::OutCubic);
+                connect(anim, SIGNAL(finished()), anim, SLOT(deleteLater()));
+                anim->start();
+            } else {
+                e->ignore();
+            }
+        } else {
+            e->ignore();
+        }
+        return true;
+    } else {
+        return QDialog::event(event);
+    }
+}
+
+bool KeyboardWindow::eventFilter(QObject *obj, QEvent *event) {
+    if (obj == ui->modifierKeys) {
+        if (event->type() == QEvent::TouchBegin) {
+            QTouchEvent* e = (QTouchEvent*) event;
+            if (e->touchPoints().count() == 1) {
+                e->accept();
+            } else {
+                e->ignore();
+            }
+            return true;
+        } else if (event->type() == QEvent::TouchUpdate) {
+            QTouchEvent* e = (QTouchEvent*) event;
+            if (e->touchPoints().count() == 1) {
+                QTouchEvent::TouchPoint point = e->touchPoints().first();
+                int left = ui->modifierKeys->mapTo(this, point.pos().toPoint()).x() + point.startPos().x() - 400;
+                if (left > 0) {
+                    left = 0;
+                }
+                ui->modifierKeys->move(left, 0);
+            } else {
+                e->ignore();
+            }
+            return true;
+        } else if (event->type() == QEvent::TouchEnd) {
+            QTouchEvent* e = (QTouchEvent*) event;
+            if (e->touchPoints().count() == 1) {
+                tPropertyAnimation* anim = new tPropertyAnimation(ui->modifierKeys, "geometry");
+                anim->setStartValue(ui->modifierKeys->geometry());
+                if (ui->modifierKeys->x() + ui->modifierKeys->width() < 200) { //Cancel it
+                    anim->setEndValue(QRect(-400, 0, 400, this->height()));
+                } else {
+                    anim->setEndValue(QRect(0, 0, 400, this->height()));
+                }
+                anim->setDuration(250);
+                anim->setEasingCurve(QEasingCurve::OutCubic);
+                connect(anim, SIGNAL(finished()), anim, SLOT(deleteLater()));
+                anim->start();
+            } else {
+                e->ignore();
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+void KeyboardWindow::on_ctrlKey_clicked()
+{
+    tPropertyAnimation* anim = new tPropertyAnimation(ui->modifierKeys, "geometry");
+    anim->setStartValue(ui->modifierKeys->geometry());
+    anim->setEndValue(QRect(-400, 0, 400, this->height()));
+    anim->setDuration(250);
+    anim->setEasingCurve(QEasingCurve::OutCubic);
+    connect(anim, SIGNAL(finished()), anim, SLOT(deleteLater()));
+    anim->start();
+}
+
+void KeyboardWindow::on_altKey_clicked()
+{
+    tPropertyAnimation* anim = new tPropertyAnimation(ui->modifierKeys, "geometry");
+    anim->setStartValue(ui->modifierKeys->geometry());
+    anim->setEndValue(QRect(-400, 0, 400, this->height()));
+    anim->setDuration(250);
+    anim->setEasingCurve(QEasingCurve::OutCubic);
+    connect(anim, SIGNAL(finished()), anim, SLOT(deleteLater()));
+    anim->start();
+}
+
+void KeyboardWindow::on_tabButton_clicked()
+{
+    tPropertyAnimation* anim = new tPropertyAnimation(ui->modifierKeys, "geometry");
+    anim->setStartValue(ui->modifierKeys->geometry());
+    anim->setEndValue(QRect(-400, 0, 400, this->height()));
+    anim->setDuration(250);
+    anim->setEasingCurve(QEasingCurve::OutCubic);
+    connect(anim, SIGNAL(finished()), anim, SLOT(deleteLater()));
+    anim->start();
 }
