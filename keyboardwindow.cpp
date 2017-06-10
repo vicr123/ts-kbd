@@ -117,8 +117,10 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
     connect(trayIcon, &QSystemTrayIcon::activated, [=](QSystemTrayIcon::ActivationReason reason) {
         if (this->isVisible()) {
             this->hide();
+            emit keyboardVisibleChanged(false);
         } else {
             this->show();
+            emit keyboardVisibleChanged(true);
         }
     });
     trayIcon->show();
@@ -347,6 +349,8 @@ void KeyboardWindow::show() {
     free(struts);
 
     this->setGeometry(screenGeometry.left(), screenGeometry.bottom() - this->height() + 1, screenGeometry.width(), this->height());
+
+    emit keyboardVisibleChanged(true);
 }
 
 void KeyboardWindow::on_changeButton_clicked() {
@@ -365,6 +369,7 @@ void KeyboardWindow::on_changeButton_clicked() {
 void KeyboardWindow::on_hideKeyboard_clicked()
 {
     this->hide();
+    emit keyboardVisibleChanged(false);
 
     QSoundEffect* keySound = new QSoundEffect();
     keySound->setSource(QUrl("qrc:/sounds/keyclickErase.wav"));

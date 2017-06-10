@@ -47,6 +47,9 @@ private slots:
 
     void on_shift_clicked(bool checked);
 
+signals:
+    void keyboardVisibleChanged(bool isVisible);
+
 private:
     Ui::KeyboardWindow *ui;
 

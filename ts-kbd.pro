@@ -8,6 +8,8 @@ QT       += core gui x11extras multimedia thelib
 CONFIG   += c++14
 LIBS     += -lX11 -lXtst
 
+DBUS_ADAPTORS = org.thesuite.tskbd.xml
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = ts-kbd
@@ -26,10 +28,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-    keyboardwindow.cpp
+    keyboardwindow.cpp \
+    kbddbus.cpp
 
 HEADERS  += \
-    keyboardwindow.h
+    keyboardwindow.h \
+    kbddbus.h
 
 FORMS    += \
     keyboardwindow.ui
