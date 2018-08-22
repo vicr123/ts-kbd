@@ -1,6 +1,9 @@
 #include "keyboardwindow.h"
 #include "ui_keyboardwindow.h"
 
+#include <QApplication>
+#include <QDesktopWidget>
+
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
@@ -134,6 +137,8 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
         }
     });
     trayIcon->show();
+
+    connect(QApplication::desktop(), SIGNAL(resized(int)), this, SLOT(screenResolutionResized()));
 }
 
 KeyboardWindow::~KeyboardWindow()
@@ -583,5 +588,11 @@ void KeyboardWindow::on_splitButton_clicked()
         ui->splitWidget3->setVisible(true);
         ui->splitWidget4->setVisible(true);
         settings.setValue("keyboard/split", true);
+    }
+}
+
+void KeyboardWindow::screenResolutionResized() {
+    if (this->isVisible()) {
+        this->show();
     }
 }

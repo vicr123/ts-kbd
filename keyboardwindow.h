@@ -54,6 +54,8 @@ private slots:
 
     void on_splitButton_clicked();
 
+    void screenResolutionResized();
+
 signals:
     void keyboardVisibleChanged(bool isVisible);
 
