@@ -29,11 +29,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
     keyboardwindow.cpp \
-    kbddbus.cpp
+    kbddbus.cpp \
+    keybutton.cpp
 
 HEADERS  += \
     keyboardwindow.h \
-    kbddbus.h
+    kbddbus.h \
+    keybutton.h
 
 FORMS    += \
     keyboardwindow.ui

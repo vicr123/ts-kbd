@@ -30,10 +30,10 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
     this->setFont(fnt);
 
     buttonIterate(this);
-    buttonIterate(ui->alphaPage);
-    buttonIterate(ui->symbolPage);
-    buttonIterate(ui->bottomFrame);
-    buttonIterate(ui->otherKeyboardsFrame);
+    //buttonIterate(ui->alphaPage);
+    //buttonIterate(ui->symbolPage);
+    //buttonIterate(ui->bottomFrame);
+    //buttonIterate(ui->otherKeyboardsFrame);
 
     ui->shift->setAttribute(Qt::WA_AcceptTouchEvents, false);
 
@@ -132,12 +132,14 @@ KeyboardWindow::~KeyboardWindow()
 }
 
 void KeyboardWindow::buttonIterate(QWidget* wid) {
-    //wid->setAttribute(Qt::WA_AcceptTouchEvents);
     for (QObject* widget : wid->children()) {
-        if ((QPushButton*) widget != NULL) {
-            connect((QPushButton*) widget, SIGNAL(clicked(bool)), this, SLOT(pressKey()));
-        } else if ((QWidget*) widget != NULL) {
-            buttonIterate((QWidget*) widget);
+        if (qobject_cast<KeyButton*>(widget) != nullptr) {
+            qDebug() << "Connecting " << qobject_cast<KeyButton*>(widget)->text();
+            connect(qobject_cast<KeyButton*>(widget), SIGNAL(tapped()), this, SLOT(pressKey()));
+        } else if (qobject_cast<QPushButton*>(widget) != nullptr) {
+            connect(qobject_cast<QPushButton*>(widget), SIGNAL(clicked(bool)), this, SLOT(pressKey()));
+        } else if (qobject_cast<QWidget*>(widget) != nullptr) {
+            buttonIterate(qobject_cast<QWidget*>(widget));
         }
     }
 }
