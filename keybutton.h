@@ -12,6 +12,9 @@ public:
 
 signals:
     void tapped();
+    void held();
+    void letGo(QPoint letGoPoint);
+    void touchMoved(QPoint pos);
 
 public slots:
 

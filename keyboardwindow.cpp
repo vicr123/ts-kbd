@@ -21,6 +21,9 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
     ui->otherKeyboardsFrame->setParent(this);
     ui->otherKeyboardsFrame->setGeometry(0, this->height(), this->width(), this->height());
 
+    this->layout()->removeWidget(ui->enterOptionsWidget);
+    ui->enterOptionsWidget->setVisible(false);
+
     ui->otherKeyboardsFrame->installEventFilter(this);
     ui->shift->installEventFilter(this);
 
@@ -29,13 +32,20 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
     fnt.setPointSize(20);
     this->setFont(fnt);
 
+    if (!settings.value("keyboard/split", false).toBool()) {
+        ui->splitWidget1->setVisible(false);
+        ui->splitWidget2->setVisible(false);
+        ui->splitWidget3->setVisible(false);
+        ui->splitWidget4->setVisible(false);
+    }
+
     buttonIterate(this);
     //buttonIterate(ui->alphaPage);
     //buttonIterate(ui->symbolPage);
     //buttonIterate(ui->bottomFrame);
     //buttonIterate(ui->otherKeyboardsFrame);
 
-    ui->shift->setAttribute(Qt::WA_AcceptTouchEvents, false);
+    //ui->shift->setAttribute(Qt::WA_AcceptTouchEvents, false);
 
     connect(ui->shift, &QPushButton::toggled, [=](bool checked) {
         if (checked) {
@@ -146,7 +156,22 @@ void KeyboardWindow::buttonIterate(QWidget* wid) {
 
 void KeyboardWindow::pressKey() {
     QPushButton* button = (QPushButton*) sender();
-    if (button == ui->shift || button == ui->ctrlKey || button == ui->altKey || button == ui->changeButton || button == ui->hideKeyboard) return; //Ignore SHIFT, change and hide key
+    if (button == ui->shift) {
+        if (capsLock) {
+            ui->shift->setChecked(false);
+            capsLock = false;
+        } else if (capsLockPressedTime.msecsTo(QDateTime::currentDateTime()) < QApplication::doubleClickInterval()) {
+            capsLock = true;
+        } else if (ui->shift->isChecked()) {
+            ui->shift->setChecked(false);
+        } else {
+            capsLockPressedTime = QDateTime::currentDateTime();
+            ui->shift->setChecked(true);
+        }
+        return;
+    }
+
+    if (button == ui->ctrlKey || button == ui->altKey || button == ui->changeButton || button == ui->hideKeyboard) return; //Ignore SHIFT, change and hide key
 
     Window focused;
     int revert_to;
@@ -168,7 +193,7 @@ void KeyboardWindow::pressKey() {
         pressedKey = XK_BackSpace;
     } else if (button == ui->returnButton) {
         pressedKey = XK_Return;
-    } else if (button == ui->spaceButton) {
+    } else if (button == ui->spaceButton || button == ui->spaceButton2) {
         pressedKey = XK_space;
     } else if (button == ui->ampButton) {
         pressedKey = XK_7;
@@ -520,4 +545,43 @@ void KeyboardWindow::on_tabButton_clicked()
 void KeyboardWindow::on_shift_clicked(bool checked)
 {
     capsLock = false;
+}
+
+void KeyboardWindow::resizeEvent(QResizeEvent* event) {
+    ui->enterOptionsWidget->setFixedSize(ui->enterOptionsWidget->sizeHint());
+    ui->enterOptionsWidget->move(this->width() - ui->enterOptionsWidget->width() - 9, this->height() - ui->enterOptionsWidget->height() - ui->returnButton->height() - 9);
+}
+
+void KeyboardWindow::on_returnButton_held()
+{
+    ui->enterOptionsWidget->setVisible(true);
+}
+
+void KeyboardWindow::on_returnButton_letGo(QPoint letGoPoint)
+{
+    QPoint globalPoint = ui->returnButton->mapToGlobal(letGoPoint);
+    QPoint enterPoint = ui->enterOptionsWidget->mapFromGlobal(globalPoint);
+
+    if (ui->splitButton->geometry().contains(enterPoint)) {
+        ui->splitButton->click();
+    }
+
+    ui->enterOptionsWidget->setVisible(false);
+}
+
+void KeyboardWindow::on_splitButton_clicked()
+{
+    if (settings.value("keyboard/split", false).toBool()) {
+        ui->splitWidget1->setVisible(false);
+        ui->splitWidget2->setVisible(false);
+        ui->splitWidget3->setVisible(false);
+        ui->splitWidget4->setVisible(false);
+        settings.setValue("keyboard/split", false);
+    } else {
+        ui->splitWidget1->setVisible(true);
+        ui->splitWidget2->setVisible(true);
+        ui->splitWidget3->setVisible(true);
+        ui->splitWidget4->setVisible(true);
+        settings.setValue("keyboard/split", true);
+    }
 }

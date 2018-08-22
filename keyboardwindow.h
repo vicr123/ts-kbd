@@ -16,6 +16,7 @@
 #include <QGestureEvent>
 #include <tpropertyanimation.h>
 #include <QLayout>
+#include <QSettings>
 
 namespace Ui {
 class KeyboardWindow;
@@ -47,6 +48,12 @@ private slots:
 
     void on_shift_clicked(bool checked);
 
+    void on_returnButton_held();
+
+    void on_returnButton_letGo(QPoint letGoPoint);
+
+    void on_splitButton_clicked();
+
 signals:
     void keyboardVisibleChanged(bool isVisible);
 
@@ -54,9 +61,13 @@ private:
     Ui::KeyboardWindow *ui;
 
     bool capsLock = false;
+    QDateTime capsLockPressedTime = QDateTime::currentDateTime();
 
     bool event(QEvent *event);
     bool eventFilter(QObject *obj, QEvent *event);
+    void resizeEvent(QResizeEvent* event);
+
+    QSettings settings;
 };
 
 #endif // KEYBOARDWINDOW_H
