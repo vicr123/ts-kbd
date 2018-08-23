@@ -15,9 +15,9 @@ InputContext::InputContext() : QPlatformInputContext()
 }
 
 bool InputContext::isValid() const {
-    if (!tVirtualKeyboard::instance()->isKeyboardRunning()) {
+    /*if (!tVirtualKeyboard::instance()->isKeyboardRunning()) {
         return false;
-    }
+    }*/
     return true;
 }
 
