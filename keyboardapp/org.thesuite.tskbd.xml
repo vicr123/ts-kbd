@@ -11,5 +11,8 @@
     <method name="height">
       <arg type="i" direction="out"/>
     </method>
+    <method name="keyboardVisible">
+      <arg type="b" direction="out"/>
+    </method>
   </interface>
 </node>

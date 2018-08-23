@@ -15,6 +15,7 @@ KbdDbus::KbdDbus(QObject *parent) : QObject(parent)
 
 void KbdDbus::showKeyboard() {
     mainWindow->show();
+    mainWindow->raise();
 }
 
 void KbdDbus::hideKeyboard() {
@@ -23,4 +24,8 @@ void KbdDbus::hideKeyboard() {
 
 int KbdDbus::height() {
     return mainWindow->height();
+}
+
+bool KbdDbus::keyboardVisible() {
+    return mainWindow->isVisible();
 }

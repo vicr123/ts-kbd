@@ -31,6 +31,7 @@ public:
     ~KeyboardWindow();
 
     void show();
+    void hide();
     void buttonIterate(QWidget* widget);
 
 private slots:
