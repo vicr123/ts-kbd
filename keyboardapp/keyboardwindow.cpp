@@ -3,11 +3,14 @@
 
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QPainter>
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
 #include <X11/extensions/XTest.h>
+
+extern float getDPIScaling();
 
 KeyboardWindow::KeyboardWindow(QWidget *parent) :
     QDialog(parent),
@@ -27,6 +30,12 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
     this->layout()->removeWidget(ui->enterOptionsWidget);
     ui->enterOptionsWidget->setVisible(false);
 
+    this->layout()->removeWidget(ui->splash);
+    ui->splash->setFixedSize(this->size());
+    ui->splash->move(0, 0);
+    ui->splash->installEventFilter(this);
+    ui->splash->setVisible(false);
+
     ui->otherKeyboardsFrame->installEventFilter(this);
     ui->shift->installEventFilter(this);
 
@@ -39,7 +48,7 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
         ui->splitWidget1->setVisible(false);
         ui->splitWidget2->setVisible(false);
         ui->splitWidget3->setVisible(false);
-        ui->splitWidget4->setVisible(false);
+        ui->spaceButton->sizePolicy().setHorizontalStretch(10);
     }
 
     buttonIterate(this);
@@ -125,17 +134,6 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
     closeButton->setFlat(true);
     connect(closeButton, SIGNAL(clicked(bool)), this, SLOT(close()));*/
 
-    QSystemTrayIcon* trayIcon = new QSystemTrayIcon();
-    trayIcon->setIcon(QIcon::fromTheme("preferences-desktop-keyboard"));
-    connect(trayIcon, &QSystemTrayIcon::activated, [=](QSystemTrayIcon::ActivationReason reason) {
-        if (this->isVisible()) {
-            this->hide();
-        } else {
-            this->show();
-        }
-    });
-    trayIcon->show();
-
     connect(QApplication::desktop(), SIGNAL(resized(int)), this, SLOT(screenResolutionResized()));
 }
 
@@ -174,14 +172,17 @@ void KeyboardWindow::pressKey() {
         return;
     }
 
-    if (button == ui->ctrlKey || button == ui->altKey || button == ui->changeButton || button == ui->hideKeyboard) return; //Ignore SHIFT, change and hide key
+    if (button == ui->ctrlKey || button == ui->altKey || button == ui->superKey || button == ui->changeButton || button == ui->hideKeyboard) return; //Ignore SHIFT, change and hide key
 
     Window focused;
     int revert_to;
 
     XGetInputFocus(QX11Info::display(), &focused, &revert_to);
 
-    KeySym pressedKey;
+    KeySym pressedKey = 0;
+    KeyCode pressedKeyCode = 0;
+    bool useKeySym = true;
+
     QString text = button->text();
     bool isShift = false;
 
@@ -196,7 +197,11 @@ void KeyboardWindow::pressKey() {
         pressedKey = XK_BackSpace;
     } else if (button == ui->returnButton) {
         pressedKey = XK_Return;
-    } else if (button == ui->spaceButton || button == ui->spaceButton2) {
+    } else if (button == ui->spaceButton) {
+        if (ignoreSpaceBar) {
+            ignoreSpaceBar = false;
+            return;
+        }
         pressedKey = XK_space;
     } else if (button == ui->ampButton) {
         pressedKey = XK_7;
@@ -251,7 +256,10 @@ void KeyboardWindow::pressKey() {
     } else if (button == ui->f12Key) {
         pressedKey = XK_F12;
     } else {
+        //Register keycode with desired character
+        int kc = findEmptyKeycode();
         QString keycode = button->text().toUtf8().toHex();
+        if (button->text() == "&&") keycode = QString("&").toUtf8().toHex();
 
         if (keycode.length() == 1) {
             keycode.prepend("000");
@@ -262,36 +270,16 @@ void KeyboardWindow::pressKey() {
         }
 
         keycode.prepend("U");
-        pressedKey = XStringToKeysym(keycode.toUtf8());
+        pressedKey = XStringToKeysym(keycode.toLocal8Bit().constData());
 
+        KeySym ksList[] = {
+            pressedKey
+        };
+        qDebug() << XChangeKeyboardMapping(QX11Info::display(), kc, 1, ksList, 1);
+        pressedKeyCode = kc;
+        useKeySym = true;
     }
 
-
-    /*XKeyEvent event;
-
-    event.display = QX11Info::display();
-    event.window = focused;
-    event.root = DefaultRootWindow(QX11Info::display());
-    event.subwindow = None;
-    event.time = CurrentTime;
-    event.x = 1;
-    event.y = 1;
-    event.x_root = 1;
-    event.y_root = 1;
-    event.same_screen = True;
-    event.keycode = XKeysymToKeycode(QX11Info::display(), pressedKey);
-
-    if (ui->shift->isChecked() || isShift) {
-        event.state = ShiftMask;
-    } else {
-        event.state = None;
-    }
-
-    event.type = KeyPress;
-    XSendEvent(QX11Info::display(), focused, True, KeyPressMask, (XEvent *) &event);
-
-    event.type = KeyRelease;
-    XSendEvent(QX11Info::display(), focused, True, KeyReleaseMask, (XEvent *) &event);*/
     if (isShift || ui->shift->isChecked()) {
         XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Shift_L), true, 0);
     }
@@ -301,8 +289,25 @@ void KeyboardWindow::pressKey() {
     if (ui->altKey->isChecked()) {
         XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Alt_L), true, 0);
     }
-    XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), pressedKey), true, 0);
-    XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), pressedKey), false, 0);
+    if (ui->superKey->isChecked()) {
+        XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Super_L), true, 0);
+    }
+
+    if (useKeySym) {
+        XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), pressedKey), true, 0);
+        XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), pressedKey), false, 0);
+    } else {
+        XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), pressedKeyCode), true, 0);
+        XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), pressedKeyCode), false, 0);
+
+        //Revert Keysym
+        KeySym ksList[1] = { 0 };
+        XChangeKeyboardMapping(QX11Info::display(), pressedKeyCode, 1, ksList, 1);
+    }
+
+    if (ui->superKey->isChecked()) {
+        XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Super_L), false, 0);
+    }
     if (ui->altKey->isChecked()) {
         XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Alt_L), false, 0);
     }
@@ -314,6 +319,7 @@ void KeyboardWindow::pressKey() {
     }
     XFlush(QX11Info::display());
 
+    ui->superKey->setChecked(false);
     ui->altKey->setChecked(false);
     ui->ctrlKey->setChecked(false);
 
@@ -330,6 +336,7 @@ void KeyboardWindow::pressKey() {
 
 void KeyboardWindow::show() {
     this->setWindowFlags(Qt::Dialog | Qt::WindowStaysOnTopHint);
+    this->setFixedHeight(this->sizeHint().height());
 
     Atom DesktopWindowTypeAtom;
     DesktopWindowTypeAtom = XInternAtom(QX11Info::display(), "_NET_WM_WINDOW_TYPE_DOCK", False);
@@ -507,6 +514,22 @@ bool KeyboardWindow::eventFilter(QObject *obj, QEvent *event) {
             connect(keySound, SIGNAL(playingChanged()), keySound, SLOT(deleteLater()));
             return true;
         }
+    } else if (obj == ui->splash) {
+        if (event->type() == QEvent::Paint) {
+            QPainter painter(ui->splash);
+            painter.setBrush(ui->splash->palette().color(QPalette::WindowText));
+
+            int width = 50 * getDPIScaling();
+            int height = 30 * getDPIScaling();
+            painter.drawRect(this->width() / 2 - width / 2, this->height() - height, width, height);
+
+            QPolygon polygon;
+            polygon.append(QPoint(this->width() / 2 - width / 2 - 20 * getDPIScaling(), this->height() - height));
+            polygon.append(QPoint(this->width() / 2, this->height() - height - 50 * getDPIScaling()));
+            polygon.append(QPoint(this->width() / 2 + width / 2 + 20 * getDPIScaling(), this->height() - height));
+
+            painter.drawPolygon(polygon);
+        }
     }
     return false;
 }
@@ -552,9 +575,10 @@ void KeyboardWindow::on_shift_clicked(bool checked)
 void KeyboardWindow::resizeEvent(QResizeEvent* event) {
     ui->enterOptionsWidget->setFixedSize(ui->enterOptionsWidget->sizeHint());
     ui->enterOptionsWidget->move(this->width() - ui->enterOptionsWidget->width() - 9, this->height() - ui->enterOptionsWidget->height() - ui->returnButton->height() - 9);
+    ui->splash->setFixedSize(this->size());
 }
 
-void KeyboardWindow::on_returnButton_held()
+void KeyboardWindow::on_returnButton_held(QPoint holdPoint)
 {
     ui->enterOptionsWidget->setVisible(true);
 }
@@ -577,13 +601,13 @@ void KeyboardWindow::on_splitButton_clicked()
         ui->splitWidget1->setVisible(false);
         ui->splitWidget2->setVisible(false);
         ui->splitWidget3->setVisible(false);
-        ui->splitWidget4->setVisible(false);
+        ui->spaceButton->sizePolicy().setHorizontalStretch(15);
         settings.setValue("keyboard/split", false);
     } else {
         ui->splitWidget1->setVisible(true);
         ui->splitWidget2->setVisible(true);
         ui->splitWidget3->setVisible(true);
-        ui->splitWidget4->setVisible(true);
+        ui->spaceButton->sizePolicy().setHorizontalStretch(10);
         settings.setValue("keyboard/split", true);
     }
 }
@@ -597,4 +621,82 @@ void KeyboardWindow::screenResolutionResized() {
 void KeyboardWindow::hide() {
     QDialog::hide();
     emit keyboardVisibleChanged(false);
+}
+
+void KeyboardWindow::initTrayIcon() {
+    QSystemTrayIcon* trayIcon = new QSystemTrayIcon();
+    trayIcon->setIcon(QIcon::fromTheme("preferences-desktop-keyboard"));
+    connect(trayIcon, &QSystemTrayIcon::activated, [=](QSystemTrayIcon::ActivationReason reason) {
+        if (this->isVisible()) {
+            this->hide();
+        } else {
+            this->show();
+        }
+    });
+    trayIcon->show();
+}
+
+void KeyboardWindow::on_superKey_clicked()
+{
+    tPropertyAnimation* anim = new tPropertyAnimation(ui->otherKeyboardsFrame, "geometry");
+    anim->setStartValue(ui->otherKeyboardsFrame->geometry());
+    anim->setEndValue(QRect(0, this->height(), this->width(), this->height()));
+    anim->setDuration(250);
+    anim->setEasingCurve(QEasingCurve::OutCubic);
+    connect(anim, SIGNAL(finished()), anim, SLOT(deleteLater()));
+    anim->start();
+}
+
+int KeyboardWindow::findEmptyKeycode() {
+    KeySym *keysyms = nullptr;
+    int ksPerKc = 0;
+    int kcLow, kcHigh;
+    XDisplayKeycodes(QX11Info::display(), &kcLow, &kcHigh);
+    //Get all available keysyms
+    keysyms = XGetKeyboardMapping(QX11Info::display(), kcLow, kcHigh - kcLow, &ksPerKc);
+
+    //Find an unused keycode
+    for (int i = kcLow; i <= kcHigh; i++) {
+        bool isEmpty = true;
+        for (int j = 0; j < ksPerKc; j++) {
+            int symindex = (i - kcLow) * ksPerKc + j;
+
+            if (keysyms[symindex] != 0) {
+                isEmpty = false;
+                break;
+            }
+        }
+
+        if (isEmpty) {
+            XFree(keysyms);
+            return i;
+        }
+    }
+    XFree(keysyms);
+    return -1;
+}
+
+void KeyboardWindow::on_spaceButton_held(const QPoint &point)
+{
+    spaceBarInitialPoint = point;
+    spaceBarLastMovePoint = point.x();
+}
+
+void KeyboardWindow::on_spaceButton_letGo(const QPoint &point)
+{
+    if (ui->spaceButton->geometry().translated(-ui->spaceButton->geometry().topLeft()).contains(point) && abs(point.x() - spaceBarInitialPoint.x()) > 5) {
+        ignoreSpaceBar = true;
+    }
+}
+
+void KeyboardWindow::on_spaceButton_touchMoved(const QPoint &point)
+{
+    int distance = point.x() - spaceBarLastMovePoint;
+    if (distance > 5 * getDPIScaling()) {
+        ui->rightButton->click();
+        spaceBarLastMovePoint = point.x();
+    } else if (distance < -5 * getDPIScaling()) {
+        ui->leftButton->click();
+        spaceBarLastMovePoint = point.x();
+    }
 }

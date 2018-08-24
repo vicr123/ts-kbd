@@ -12,7 +12,7 @@ public:
 
 signals:
     void tapped();
-    void held();
+    void held(QPoint heldPoint);
     void letGo(QPoint letGoPoint);
     void touchMoved(QPoint pos);
 

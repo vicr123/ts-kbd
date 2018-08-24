@@ -27,12 +27,13 @@ class KeyboardWindow : public QDialog
     Q_OBJECT
 
 public:
-    explicit KeyboardWindow(QWidget *parent = 0);
+    explicit KeyboardWindow(QWidget *parent = nullptr);
     ~KeyboardWindow();
 
     void show();
     void hide();
     void buttonIterate(QWidget* widget);
+    void initTrayIcon();
 
 private slots:
     void pressKey();
@@ -49,13 +50,23 @@ private slots:
 
     void on_shift_clicked(bool checked);
 
-    void on_returnButton_held();
+    void on_returnButton_held(QPoint holdPoint);
 
     void on_returnButton_letGo(QPoint letGoPoint);
 
     void on_splitButton_clicked();
 
     void screenResolutionResized();
+
+    void on_superKey_clicked();
+
+    int findEmptyKeycode();
+
+    void on_spaceButton_held(const QPoint &);
+
+    void on_spaceButton_letGo(const QPoint &);
+
+    void on_spaceButton_touchMoved(const QPoint &);
 
 signals:
     void keyboardVisibleChanged(bool isVisible);
@@ -69,6 +80,10 @@ private:
     bool event(QEvent *event);
     bool eventFilter(QObject *obj, QEvent *event);
     void resizeEvent(QResizeEvent* event);
+
+    bool ignoreSpaceBar = false;
+    QPoint spaceBarInitialPoint;
+    int spaceBarLastMovePoint;
 
     QSettings settings;
 };

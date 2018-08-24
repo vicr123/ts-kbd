@@ -13,17 +13,17 @@ bool KeyButton::event(QEvent* event) {
         e->accept();
 
         this->setDown(true);
-        emit held();
+        emit held(e->touchPoints().first().pos().toPoint());
 
         return true;
     } else if (event->type() == QEvent::TouchEnd) {
         QTouchEvent* e = (QTouchEvent*) event;
         this->setDown(false);
 
+        emit letGo(e->touchPoints().first().pos().toPoint());
         if (this->geometry().translated(-this->geometry().topLeft()).contains(e->touchPoints().first().pos().toPoint())) {
             emit tapped();
         }
-        emit letGo(e->touchPoints().first().pos().toPoint());
 
         e->accept();
         return true;

@@ -10,6 +10,7 @@ class KbdDbus : public QObject
     Q_CLASSINFO("D-Bus Interface", "org.thesuite.tskbd")
 public:
     explicit KbdDbus(QObject *parent = nullptr);
+    bool reg();
 
 Q_SIGNALS:
     Q_SCRIPTABLE void keyboardVisibleChanged(bool visible);

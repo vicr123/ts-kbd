@@ -8,9 +8,12 @@ KbdDbus::KbdDbus(QObject *parent) : QObject(parent)
     new TskbdAdaptor(this);
     QDBusConnection dbus = QDBusConnection::sessionBus();
     dbus.registerObject("/org/thesuite/tskbd", this);
-    dbus.registerService("org.thesuite.tskbd");
 
     connect(mainWindow, SIGNAL(keyboardVisibleChanged(bool)), this, SIGNAL(keyboardVisibleChanged(bool)));
+}
+
+bool KbdDbus::reg() {
+    return QDBusConnection::sessionBus().registerService("org.thesuite.tskbd");
 }
 
 void KbdDbus::showKeyboard() {
