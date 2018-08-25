@@ -1,10 +1,12 @@
 #include "keyboardwindow.h"
 #include "kbddbus.h"
+#include "keyboardstate.h"
 #include <QApplication>
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 
 KeyboardWindow* mainWindow;
+KeyboardState* state;
 
 int main(int argc, char *argv[])
 {
@@ -14,6 +16,8 @@ int main(int argc, char *argv[])
     a.setOrganizationName("theSuite");
     a.setOrganizationDomain("");
     a.setApplicationName("ts-kbd");
+
+    state = new KeyboardState;
 
     mainWindow = new KeyboardWindow;
 

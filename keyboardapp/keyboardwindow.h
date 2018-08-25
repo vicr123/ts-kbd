@@ -50,10 +50,6 @@ private slots:
 
     void on_shift_clicked(bool checked);
 
-    void on_returnButton_held(QPoint holdPoint);
-
-    void on_returnButton_letGo(QPoint letGoPoint);
-
     void on_splitButton_clicked();
 
     void screenResolutionResized();
@@ -67,6 +63,8 @@ private slots:
     void on_spaceButton_letGo(const QPoint &);
 
     void on_spaceButton_touchMoved(const QPoint &);
+
+    void pressKeySym(unsigned long ks);
 
 signals:
     void keyboardVisibleChanged(bool isVisible);

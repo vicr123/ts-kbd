@@ -30,15 +30,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
     keyboardwindow.cpp \
     kbddbus.cpp \
-    keybutton.cpp
+    keybutton.cpp \
+    layouts/layoutus.cpp \
+    keyboardstate.cpp
 
 HEADERS  += \
     keyboardwindow.h \
     kbddbus.h \
-    keybutton.h
+    keybutton.h \
+    layouts/layoutus.h \
+    keyboardstate.h
 
 FORMS    += \
-    keyboardwindow.ui
+    keyboardwindow.ui \
+    layouts/layoutus.ui
 
 RESOURCES += \
     resources.qrc

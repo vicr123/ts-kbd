@@ -4,13 +4,20 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QPainter>
+#include "keyboardstate.h"
+#include "layouts/layoutus.h"
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
 #include <X11/extensions/XTest.h>
 
+#undef Bool
+#undef CursorShape
+#undef Unsorted
+
 extern float getDPIScaling();
+extern KeyboardState* state;
 
 KeyboardWindow::KeyboardWindow(QWidget *parent) :
     QDialog(parent),
@@ -20,6 +27,7 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
 
     this->setAttribute(Qt::WA_AcceptTouchEvents);
     //ui->modifierKeys->setAttribute(Qt::WA_AcceptTouchEvents);
+
 
     this->layout()->removeWidget(ui->otherKeyboardsFrame);
     this->setFixedHeight(this->sizeHint().height());
@@ -37,102 +45,29 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
     ui->splash->setVisible(false);
 
     ui->otherKeyboardsFrame->installEventFilter(this);
-    ui->shift->installEventFilter(this);
 
     QFont fnt = this->font();
     ui->otherKeyboardsFrame->setFont(fnt);
     fnt.setPointSize(20);
     this->setFont(fnt);
 
-    if (!settings.value("keyboard/split", false).toBool()) {
-        ui->splitWidget1->setVisible(false);
-        ui->splitWidget2->setVisible(false);
-        ui->splitWidget3->setVisible(false);
+    buttonIterate(this);
+
+    LayoutUS* usLayout = new LayoutUS();
+    usLayout->setFont(fnt);
+    ui->keyboardsStack->addWidget(usLayout);
+    connect(usLayout, SIGNAL(typeKey(unsigned long)), this, SLOT(pressKeySym(unsigned long)));
+
+    if (state->split()) {
         ui->spaceButton->sizePolicy().setHorizontalStretch(10);
     }
-
-    buttonIterate(this);
-    //buttonIterate(ui->alphaPage);
-    //buttonIterate(ui->symbolPage);
-    //buttonIterate(ui->bottomFrame);
-    //buttonIterate(ui->otherKeyboardsFrame);
-
-    //ui->shift->setAttribute(Qt::WA_AcceptTouchEvents, false);
-
-    connect(ui->shift, &QPushButton::toggled, [=](bool checked) {
-        if (checked) {
-            ui->qButton->setText("Q");
-            ui->wButton->setText("W");
-            ui->eButton->setText("E");
-            ui->rButton->setText("R");
-            ui->tButton->setText("T");
-            ui->yButton->setText("Y");
-            ui->uButton->setText("U");
-            ui->iButton->setText("I");
-            ui->oButton->setText("O");
-            ui->pButton->setText("P");
-
-            ui->aButton->setText("A");
-            ui->sButton->setText("S");
-            ui->dButton->setText("D");
-            ui->fButton->setText("F");
-            ui->gButton->setText("G");
-            ui->hButton->setText("H");
-            ui->jButton->setText("J");
-            ui->kButton->setText("K");
-            ui->lButton->setText("L");
-
-            ui->zButton->setText("Z");
-            ui->xButton->setText("X");
-            ui->cButton->setText("C");
-            ui->vButton->setText("V");
-            ui->bButton->setText("B");
-            ui->nButton->setText("N");
-            ui->mButton->setText("M");
+    connect(state, &KeyboardState::splitChanged, [=](bool split) {
+        if (split) {
+            ui->spaceButton->sizePolicy().setHorizontalStretch(15);
         } else {
-            ui->qButton->setText("q");
-            ui->wButton->setText("w");
-            ui->eButton->setText("e");
-            ui->rButton->setText("r");
-            ui->tButton->setText("t");
-            ui->yButton->setText("y");
-            ui->uButton->setText("u");
-            ui->iButton->setText("i");
-            ui->oButton->setText("o");
-            ui->pButton->setText("p");
-
-            ui->aButton->setText("a");
-            ui->sButton->setText("s");
-            ui->dButton->setText("d");
-            ui->fButton->setText("f");
-            ui->gButton->setText("g");
-            ui->hButton->setText("h");
-            ui->jButton->setText("j");
-            ui->kButton->setText("k");
-            ui->lButton->setText("l");
-
-            ui->zButton->setText("z");
-            ui->xButton->setText("x");
-            ui->cButton->setText("c");
-            ui->vButton->setText("v");
-            ui->bButton->setText("b");
-            ui->nButton->setText("n");
-            ui->mButton->setText("m");
+            ui->spaceButton->sizePolicy().setHorizontalStretch(10);
         }
-
-        QSoundEffect* keySound = new QSoundEffect();
-        keySound->setSource(QUrl("qrc:/sounds/keyclickErase.wav"));
-        keySound->play();
-        connect(keySound, SIGNAL(playingChanged()), keySound, SLOT(deleteLater()));
     });
-
-    /*QPushButton* closeButton = new QPushButton;
-    closeButton->setIcon(QIcon::fromTheme("window-close"));
-    closeButton->setParent(this);
-    closeButton->setIconSize(QSize(24, 24));
-    closeButton->setGeometry(this->geometry().right() - 38, 6, 32, 32);
-    closeButton->setFlat(true);
-    connect(closeButton, SIGNAL(clicked(bool)), this, SLOT(close()));*/
 
     connect(QApplication::desktop(), SIGNAL(resized(int)), this, SLOT(screenResolutionResized()));
 }
@@ -157,22 +92,8 @@ void KeyboardWindow::buttonIterate(QWidget* wid) {
 
 void KeyboardWindow::pressKey() {
     QPushButton* button = (QPushButton*) sender();
-    if (button == ui->shift) {
-        if (capsLock) {
-            ui->shift->setChecked(false);
-            capsLock = false;
-        } else if (capsLockPressedTime.msecsTo(QDateTime::currentDateTime()) < QApplication::doubleClickInterval()) {
-            capsLock = true;
-        } else if (ui->shift->isChecked()) {
-            ui->shift->setChecked(false);
-        } else {
-            capsLockPressedTime = QDateTime::currentDateTime();
-            ui->shift->setChecked(true);
-        }
-        return;
-    }
 
-    if (button == ui->ctrlKey || button == ui->altKey || button == ui->superKey || button == ui->changeButton || button == ui->hideKeyboard) return; //Ignore SHIFT, change and hide key
+    if (button == ui->ctrlKey || button == ui->altKey || button == ui->superKey || button == ui->changeButton || button == ui->hideKeyboard) return;
 
     Window focused;
     int revert_to;
@@ -193,11 +114,7 @@ void KeyboardWindow::pressKey() {
         isShift = true;
     }
 
-    if (button == ui->backspace || button == ui->backspace2Button) {
-        pressedKey = XK_BackSpace;
-    } else if (button == ui->returnButton) {
-        pressedKey = XK_Return;
-    } else if (button == ui->spaceButton) {
+    if (button == ui->spaceButton) {
         if (ignoreSpaceBar) {
             ignoreSpaceBar = false;
             return;
@@ -280,7 +197,11 @@ void KeyboardWindow::pressKey() {
         useKeySym = true;
     }
 
-    if (isShift || ui->shift->isChecked()) {
+    pressKeySym(pressedKey);
+}
+
+void KeyboardWindow::pressKeySym(unsigned long ks) {
+    if (state->shift() || state->capsLock()) {
         XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Shift_L), true, 0);
     }
     if (ui->ctrlKey->isChecked()) {
@@ -293,17 +214,17 @@ void KeyboardWindow::pressKey() {
         XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Super_L), true, 0);
     }
 
-    if (useKeySym) {
-        XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), pressedKey), true, 0);
-        XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), pressedKey), false, 0);
-    } else {
+    //if (useKeySym) {
+        XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), ks), true, 0);
+        XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), ks), false, 0);
+    /*} else {
         XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), pressedKeyCode), true, 0);
         XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), pressedKeyCode), false, 0);
 
         //Revert Keysym
         KeySym ksList[1] = { 0 };
         XChangeKeyboardMapping(QX11Info::display(), pressedKeyCode, 1, ksList, 1);
-    }
+    }*/
 
     if (ui->superKey->isChecked()) {
         XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Super_L), false, 0);
@@ -314,7 +235,7 @@ void KeyboardWindow::pressKey() {
     if (ui->ctrlKey->isChecked()) {
         XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Control_L), false, 0);
     }
-    if (isShift || ui->shift->isChecked()) {
+    if (state->shift() || state->capsLock()) {
         XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Shift_L), false, 0);
     }
     XFlush(QX11Info::display());
@@ -323,9 +244,7 @@ void KeyboardWindow::pressKey() {
     ui->altKey->setChecked(false);
     ui->ctrlKey->setChecked(false);
 
-    if (!capsLock) {
-        ui->shift->setChecked(false);
-    }
+    if (state->shift()) state->setShift(false);
 
     QSoundEffect* keySound = new QSoundEffect();
     keySound->setSource(QUrl("qrc:/sounds/keyclick.wav"));
@@ -391,10 +310,10 @@ void KeyboardWindow::show() {
 }
 
 void KeyboardWindow::on_changeButton_clicked() {
-    if (ui->stackedWidget->currentIndex() == 0) {
-        ui->stackedWidget->setCurrentIndex(1);
+    if (ui->keyboardsStack->currentIndex() == 0) {
+        ui->keyboardsStack->setCurrentIndex(1);
     } else {
-        ui->stackedWidget->setCurrentIndex(0);
+        ui->keyboardsStack->setCurrentIndex(0);
     }
 
     QSoundEffect* keySound = new QSoundEffect();
@@ -503,17 +422,6 @@ bool KeyboardWindow::eventFilter(QObject *obj, QEvent *event) {
         } else {
             return false;
         }
-    } else if (obj == ui->shift) {
-        if (event->type() == QEvent::MouseButtonDblClick) {
-            capsLock = true;
-            ui->shift->setChecked(true);
-
-            QSoundEffect* keySound = new QSoundEffect();
-            keySound->setSource(QUrl("qrc:/sounds/keyclick.wav"));
-            keySound->play();
-            connect(keySound, SIGNAL(playingChanged()), keySound, SLOT(deleteLater()));
-            return true;
-        }
     } else if (obj == ui->splash) {
         if (event->type() == QEvent::Paint) {
             QPainter painter(ui->splash);
@@ -574,39 +482,15 @@ void KeyboardWindow::on_shift_clicked(bool checked)
 
 void KeyboardWindow::resizeEvent(QResizeEvent* event) {
     ui->enterOptionsWidget->setFixedSize(ui->enterOptionsWidget->sizeHint());
-    ui->enterOptionsWidget->move(this->width() - ui->enterOptionsWidget->width() - 9, this->height() - ui->enterOptionsWidget->height() - ui->returnButton->height() - 9);
     ui->splash->setFixedSize(this->size());
-}
-
-void KeyboardWindow::on_returnButton_held(QPoint holdPoint)
-{
-    ui->enterOptionsWidget->setVisible(true);
-}
-
-void KeyboardWindow::on_returnButton_letGo(QPoint letGoPoint)
-{
-    QPoint globalPoint = ui->returnButton->mapToGlobal(letGoPoint);
-    QPoint enterPoint = ui->enterOptionsWidget->mapFromGlobal(globalPoint);
-
-    if (ui->splitButton->geometry().contains(enterPoint)) {
-        ui->splitButton->click();
-    }
-
-    ui->enterOptionsWidget->setVisible(false);
 }
 
 void KeyboardWindow::on_splitButton_clicked()
 {
     if (settings.value("keyboard/split", false).toBool()) {
-        ui->splitWidget1->setVisible(false);
-        ui->splitWidget2->setVisible(false);
-        ui->splitWidget3->setVisible(false);
         ui->spaceButton->sizePolicy().setHorizontalStretch(15);
         settings.setValue("keyboard/split", false);
     } else {
-        ui->splitWidget1->setVisible(true);
-        ui->splitWidget2->setVisible(true);
-        ui->splitWidget3->setVisible(true);
         ui->spaceButton->sizePolicy().setHorizontalStretch(10);
         settings.setValue("keyboard/split", true);
     }
