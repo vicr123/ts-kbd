@@ -6,6 +6,7 @@
 #include <QPainter>
 #include "keyboardstate.h"
 #include "layouts/layoutus.h"
+#include "layouts/layoutsym.h"
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -57,6 +58,11 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
     usLayout->setFont(fnt);
     ui->keyboardsStack->addWidget(usLayout);
     connect(usLayout, SIGNAL(typeKey(unsigned long)), this, SLOT(pressKeySym(unsigned long)));
+
+    LayoutSym* symLayout = new LayoutSym();
+    symLayout->setFont(fnt);
+    ui->keyboardsStack->addWidget(symLayout);
+    connect(symLayout, SIGNAL(typeKey(unsigned long)), this, SLOT(pressKeySym(unsigned long)));
 
     if (state->split()) {
         ui->spaceButton->sizePolicy().setHorizontalStretch(10);
@@ -120,8 +126,6 @@ void KeyboardWindow::pressKey() {
             return;
         }
         pressedKey = XK_space;
-    } else if (button == ui->ampButton) {
-        pressedKey = XK_7;
     } else if (button == ui->tabButton) {
         pressedKey = XK_Tab;
     } else if (button == ui->upButton) {

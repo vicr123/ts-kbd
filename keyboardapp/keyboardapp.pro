@@ -32,18 +32,21 @@ SOURCES += main.cpp\
     kbddbus.cpp \
     keybutton.cpp \
     layouts/layoutus.cpp \
-    keyboardstate.cpp
+    keyboardstate.cpp \
+    layouts/layoutsym.cpp
 
 HEADERS  += \
     keyboardwindow.h \
     kbddbus.h \
     keybutton.h \
     layouts/layoutus.h \
-    keyboardstate.h
+    keyboardstate.h \
+    layouts/layoutsym.h
 
 FORMS    += \
     keyboardwindow.ui \
-    layouts/layoutus.ui
+    layouts/layoutus.ui \
+    layouts/layoutsym.ui
 
 RESOURCES += \
     resources.qrc
