@@ -30,6 +30,11 @@ public:
     explicit KeyboardWindow(QWidget *parent = nullptr);
     ~KeyboardWindow();
 
+    enum Layouts {
+        enUS,
+        Symbol
+    };
+
     void show();
     void hide();
     void buttonIterate(QWidget* widget);
@@ -66,6 +71,8 @@ private slots:
 
     void pressKeySym(unsigned long ks);
 
+    void on_settingsButton_clicked();
+
 signals:
     void keyboardVisibleChanged(bool isVisible);
 
@@ -82,6 +89,8 @@ private:
     bool ignoreSpaceBar = false;
     QPoint spaceBarInitialPoint;
     int spaceBarLastMovePoint;
+
+    QMap<Layouts, QWidget*> layouts;
 
     QSettings settings;
 };

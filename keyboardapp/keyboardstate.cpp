@@ -33,5 +33,6 @@ bool KeyboardState::split() {
 
 void KeyboardState::setSplit(bool split) {
     sp = split;
+    settings.setValue("keyboard/split", split);
     emit splitChanged(split);
 }

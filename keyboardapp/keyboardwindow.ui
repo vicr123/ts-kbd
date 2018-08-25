@@ -22,7 +22,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>theShell Touch Keyboard</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
@@ -698,6 +698,16 @@
         </property>
         <property name="checkable">
          <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="3">
+       <widget class="QPushButton" name="settingsButton">
+        <property name="text">
+         <string>SETTINGS</string>
+        </property>
+        <property name="icon">
+         <iconset theme="configure"/>
         </property>
        </widget>
       </item>

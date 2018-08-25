@@ -182,6 +182,8 @@ void LayoutUS::pressKey() {
         keycode.prepend("U");
         pressedKey = XStringToKeysym(keycode.toLocal8Bit().constData());
 
+        emit pushLetter(button->text());
+
         /*KeySym ksList[] = {
             pressedKey
         };

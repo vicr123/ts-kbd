@@ -23,6 +23,7 @@ public slots:
 
 signals:
     void typeKey(unsigned long key);
+    void pushLetter(QString letter);
 
 private:
     Ui::LayoutSym *ui;

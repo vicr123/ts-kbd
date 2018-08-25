@@ -33,7 +33,8 @@ SOURCES += main.cpp\
     keybutton.cpp \
     layouts/layoutus.cpp \
     keyboardstate.cpp \
-    layouts/layoutsym.cpp
+    layouts/layoutsym.cpp \
+    settings.cpp
 
 HEADERS  += \
     keyboardwindow.h \
@@ -41,12 +42,14 @@ HEADERS  += \
     keybutton.h \
     layouts/layoutus.h \
     keyboardstate.h \
-    layouts/layoutsym.h
+    layouts/layoutsym.h \
+    settings.h
 
 FORMS    += \
     keyboardwindow.ui \
     layouts/layoutus.ui \
-    layouts/layoutsym.ui
+    layouts/layoutsym.ui \
+    settings.ui
 
 RESOURCES += \
     resources.qrc

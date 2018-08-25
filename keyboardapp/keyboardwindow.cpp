@@ -8,6 +8,8 @@
 #include "layouts/layoutus.h"
 #include "layouts/layoutsym.h"
 
+#include "settings.h"
+
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
@@ -27,8 +29,6 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
     ui->setupUi(this);
 
     this->setAttribute(Qt::WA_AcceptTouchEvents);
-    //ui->modifierKeys->setAttribute(Qt::WA_AcceptTouchEvents);
-
 
     this->layout()->removeWidget(ui->otherKeyboardsFrame);
     this->setFixedHeight(this->sizeHint().height());
@@ -58,11 +58,13 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
     usLayout->setFont(fnt);
     ui->keyboardsStack->addWidget(usLayout);
     connect(usLayout, SIGNAL(typeKey(unsigned long)), this, SLOT(pressKeySym(unsigned long)));
+    layouts.insert(enUS, usLayout);
 
     LayoutSym* symLayout = new LayoutSym();
     symLayout->setFont(fnt);
     ui->keyboardsStack->addWidget(symLayout);
     connect(symLayout, SIGNAL(typeKey(unsigned long)), this, SLOT(pressKeySym(unsigned long)));
+    layouts.insert(Symbol, symLayout);
 
     if (state->split()) {
         ui->spaceButton->sizePolicy().setHorizontalStretch(10);
@@ -258,7 +260,7 @@ void KeyboardWindow::pressKeySym(unsigned long ks) {
 
 
 void KeyboardWindow::show() {
-    this->setWindowFlags(Qt::Dialog | Qt::WindowStaysOnTopHint);
+    this->setWindowFlags(Qt::Dialog | Qt::WindowStaysOnTopHint | Qt::SubWindow);
     this->setFixedHeight(this->sizeHint().height());
 
     Atom DesktopWindowTypeAtom;
@@ -314,10 +316,10 @@ void KeyboardWindow::show() {
 }
 
 void KeyboardWindow::on_changeButton_clicked() {
-    if (ui->keyboardsStack->currentIndex() == 0) {
-        ui->keyboardsStack->setCurrentIndex(1);
+    if (ui->keyboardsStack->currentWidget() != layouts.value(Symbol)) {
+        ui->keyboardsStack->setCurrentWidget(layouts.value(Symbol));
     } else {
-        ui->keyboardsStack->setCurrentIndex(0);
+        ui->keyboardsStack->setCurrentWidget(layouts.value(enUS));
     }
 
     QSoundEffect* keySound = new QSoundEffect();
@@ -587,4 +589,10 @@ void KeyboardWindow::on_spaceButton_touchMoved(const QPoint &point)
         ui->leftButton->click();
         spaceBarLastMovePoint = point.x();
     }
+}
+
+void KeyboardWindow::on_settingsButton_clicked()
+{
+    Settings* settings = new Settings();
+    settings->show();
 }
