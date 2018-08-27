@@ -40,7 +40,8 @@ SOURCES += main.cpp\
     keyboardstate.cpp \
     layouts/layoutsym.cpp \
     settings.cpp \
-    suggestionbar.cpp
+    suggestionbar.cpp \
+    layouts/layoutnumeric.cpp
 
 HEADERS  += \
     keyboardwindow.h \
@@ -50,14 +51,16 @@ HEADERS  += \
     keyboardstate.h \
     layouts/layoutsym.h \
     settings.h \
-    suggestionbar.h
+    suggestionbar.h \
+    layouts/layoutnumeric.h
 
 FORMS    += \
     keyboardwindow.ui \
     layouts/layoutus.ui \
     layouts/layoutsym.ui \
     settings.ui \
-    suggestionbar.ui
+    suggestionbar.ui \
+    layouts/layoutnumeric.ui
 
 RESOURCES += \
     resources.qrc

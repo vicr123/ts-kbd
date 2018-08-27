@@ -5,8 +5,10 @@
 #include <QDesktopWidget>
 #include <QPainter>
 #include "keyboardstate.h"
+
 #include "layouts/layoutus.h"
 #include "layouts/layoutsym.h"
+#include "layouts/layoutnumeric.h"
 
 #include "settings.h"
 
@@ -67,6 +69,13 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
     connect(symLayout, SIGNAL(typeKey(unsigned long)), this, SLOT(pressKeySym(unsigned long)));
     connect(symLayout, SIGNAL(pushLetter(QString)), ui->suggestionBar, SLOT(pushLetter(QString)));
     layouts.insert(Symbol, symLayout);
+
+    LayoutNumeric* numLayout = new LayoutNumeric();
+    numLayout->setFont(fnt);
+    ui->keyboardsStack->addWidget(numLayout);
+    connect(numLayout, SIGNAL(typeKey(unsigned long)), this, SLOT(pressKeySym(unsigned long)));
+    connect(numLayout, SIGNAL(pushLetter(QString)), ui->suggestionBar, SLOT(pushLetter(QString)));
+    layouts.insert(Numeric, numLayout);
 
     if (state->split()) {
         ui->spaceButton->sizePolicy().setHorizontalStretch(10);
@@ -271,6 +280,7 @@ void KeyboardWindow::pressKeySym(unsigned long ks) {
 void KeyboardWindow::show() {
     this->setWindowFlags(Qt::Dialog | Qt::WindowStaysOnTopHint | Qt::SubWindow);
     this->setFixedHeight(this->sizeHint().height());
+    setKeyboardType("normal");
 
     Atom DesktopWindowTypeAtom;
     DesktopWindowTypeAtom = XInternAtom(QX11Info::display(), "_NET_WM_WINDOW_TYPE_DOCK", False);
@@ -283,43 +293,7 @@ void KeyboardWindow::show() {
 
     QDialog::show();
 
-    XEvent event;
-
-    event.xclient.type = ClientMessage;
-    event.xclient.serial = 0;
-    event.xclient.send_event = True;
-    event.xclient.message_type = XInternAtom(QX11Info::display(), "_NET_WM_STATE", False);
-    event.xclient.window = this->winId();
-    event.xclient.format = 32;
-    event.xclient.data.l[0] = 1;
-    event.xclient.data.l[1] = XInternAtom(QX11Info::display(), "_NET_WM_STATE_SKIP_TASKBAR", False);
-    event.xclient.data.l[2] = XInternAtom(QX11Info::display(), "_NET_WM_STATE_SKIP_PAGER", False);;
-    event.xclient.data.l[3] = 1;
-    event.xclient.data.l[4] = 0;
-
-    XSendEvent(QX11Info::display(), DefaultRootWindow(QX11Info::display()), False, SubstructureRedirectMask | SubstructureNotifyMask, &event);
-
-
-    QRect screenGeometry = QApplication::desktop()->screenGeometry();
-    long* struts = (long*) malloc(sizeof(long) * 12);
-    struts[0] = 0;
-    struts[1] = 0;
-    struts[2] = 0;
-    struts[3] = this->height();
-    struts[4] = 0;
-    struts[5] = 0;
-    struts[6] = 0;
-    struts[7] = 0;
-    struts[8] = 0;
-    struts[9] = 0;
-    struts[10] = screenGeometry.left();
-    struts[11] = screenGeometry.right();
-    retval = XChangeProperty(QX11Info::display(), this->winId(), XInternAtom(QX11Info::display(), "_NET_WM_STRUT_PARTIAL", False),
-                     XA_CARDINAL, 32, PropModeReplace, (unsigned char*) struts, 12);
-
-    free(struts);
-
-    this->setGeometry(screenGeometry.left(), screenGeometry.bottom() - this->height() + 1, screenGeometry.width(), this->height());
+    changeGeometry();
 
     emit keyboardVisibleChanged(true);
 }
@@ -328,7 +302,7 @@ void KeyboardWindow::on_changeButton_clicked() {
     if (ui->keyboardsStack->currentWidget() != layouts.value(Symbol)) {
         ui->keyboardsStack->setCurrentWidget(layouts.value(Symbol));
     } else {
-        ui->keyboardsStack->setCurrentWidget(layouts.value(enUS));
+        ui->keyboardsStack->setCurrentWidget(layouts.value(currentKeyboardLayout));
     }
 
     QSoundEffect* keySound = new QSoundEffect();
@@ -640,6 +614,58 @@ void KeyboardWindow::on_suggestionBar_wordSelected(const QString &word, int char
     }
 }
 
-void KeyboardWindow::setKeyboardType(QString type) {
+void KeyboardWindow::changeGeometry() {
+    XEvent event;
 
+    event.xclient.type = ClientMessage;
+    event.xclient.serial = 0;
+    event.xclient.send_event = True;
+    event.xclient.message_type = XInternAtom(QX11Info::display(), "_NET_WM_STATE", False);
+    event.xclient.window = this->winId();
+    event.xclient.format = 32;
+    event.xclient.data.l[0] = 1;
+    event.xclient.data.l[1] = XInternAtom(QX11Info::display(), "_NET_WM_STATE_SKIP_TASKBAR", False);
+    event.xclient.data.l[2] = XInternAtom(QX11Info::display(), "_NET_WM_STATE_SKIP_PAGER", False);;
+    event.xclient.data.l[3] = 1;
+    event.xclient.data.l[4] = 0;
+
+    XSendEvent(QX11Info::display(), DefaultRootWindow(QX11Info::display()), False, SubstructureRedirectMask | SubstructureNotifyMask, &event);
+
+
+    QRect screenGeometry = QApplication::desktop()->screenGeometry();
+    long* struts = (long*) malloc(sizeof(long) * 12);
+    struts[0] = 0;
+    struts[1] = 0;
+    struts[2] = 0;
+    struts[3] = this->height();
+    struts[4] = 0;
+    struts[5] = 0;
+    struts[6] = 0;
+    struts[7] = 0;
+    struts[8] = 0;
+    struts[9] = 0;
+    struts[10] = screenGeometry.left();
+    struts[11] = screenGeometry.right();
+    XChangeProperty(QX11Info::display(), this->winId(), XInternAtom(QX11Info::display(), "_NET_WM_STRUT_PARTIAL", False),
+                     XA_CARDINAL, 32, PropModeReplace, (unsigned char*) struts, 12);
+
+    free(struts);
+
+    this->setGeometry(screenGeometry.left(), screenGeometry.bottom() - this->height() + 1, screenGeometry.width(), this->height());
+    ui->otherKeyboardsFrame->setGeometry(0, this->height(), this->width(), this->height());
+}
+
+void KeyboardWindow::setKeyboardType(QString type) {
+    qDebug() << "Set type to " + type;
+    if (type == "normal") {
+        currentKeyboardLayout = defaultKeyboardLayout;
+        ui->keyboardsStack->setCurrentWidget(layouts.value(enUS));
+        ui->suggestionBar->setVisible(true);
+    } else if (type == "numeric") {
+        currentKeyboardLayout = Numeric;
+        ui->keyboardsStack->setCurrentWidget(layouts.value(Numeric));
+        ui->suggestionBar->setVisible(false);
+    }
+    //this->setFixedHeight(this->sizeHint().height());
+    //changeGeometry();
 }

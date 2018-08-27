@@ -26,6 +26,17 @@ void InputContext::showInputPanel() {
     if (tVirtualKeyboard::instance()->keyboardVisible()) return;
     if (!lastEventWasTouch) return;
     tVirtualKeyboard::instance()->showKeyboard();
+
+    if (focusObject != nullptr) {
+        QInputMethodQueryEvent event(Qt::ImHints);
+        QCoreApplication::sendEvent(focusObject, &event);
+
+        Qt::InputMethodHints hints = (Qt::InputMethodHints) event.value(Qt::ImHints).toInt();
+        qDebug() << hints;
+        if (hints.testFlag(Qt::ImhDigitsOnly) || hints.testFlag(Qt::ImhPreferNumbers) || hints.testFlag(Qt::ImhTime) || hints.testFlag(Qt::ImhDate)) {
+            tVirtualKeyboard::instance()->setKeyboardType("numeric");
+        }
+    }
 }
 
 void InputContext::hideInputPanel() {
@@ -60,4 +71,8 @@ bool InputContext::eventFilter(QObject* watched, QEvent* event) {
         }
     //}
     return false;
+}
+
+void InputContext::setFocusObject(QObject* focusObject) {
+    this->focusObject = focusObject;
 }

@@ -32,7 +32,8 @@ public:
 
     enum Layouts {
         enUS,
-        Symbol
+        Symbol,
+        Numeric
     };
 
     void show();
@@ -76,6 +77,8 @@ private slots:
 
     void on_suggestionBar_wordSelected(const QString &, int );
 
+    void changeGeometry();
+
 signals:
     void keyboardVisibleChanged(bool isVisible);
 
@@ -94,6 +97,7 @@ private:
     int spaceBarLastMovePoint;
 
     QMap<Layouts, QWidget*> layouts;
+    Layouts defaultKeyboardLayout = enUS, currentKeyboardLayout;
 
     QSettings settings;
 };

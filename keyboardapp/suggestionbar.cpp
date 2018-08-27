@@ -112,6 +112,7 @@ void SuggestionBar::updateSuggestions() {
     bool firstWord = true;
     if (!settings.value("autocorrect/on", true).toBool()) pendingAutocorrect = false; //Disable Autocorrect if user turns setting off
     if (dictionary->spell(currentWord.toStdString()) && currentWord != "i") pendingAutocorrect = false; //Disable Autocorrect if word exists in dictionary
+    if (!this->isVisible()) pendingAutocorrect = false; //Disable Autocorrect if suggestion bar is invisible
 
     if (currentWord != "") shownWords.append(currentWord); //Allow user to override autocorrect
     shownWords.append(autocorrections);

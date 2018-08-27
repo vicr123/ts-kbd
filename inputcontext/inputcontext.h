@@ -18,6 +18,7 @@ public:
     void showInputPanel();
     void hideInputPanel();
     bool isInputPanelVisible() const;
+    void setFocusObject(QObject *object);
 
 signals:
 
@@ -26,6 +27,7 @@ public slots:
 private:
     QSettings* tsSettings;
     bool lastEventWasTouch = false;
+    QObject* focusObject = nullptr;
 
     bool eventFilter(QObject* watched, QEvent* event);
 };
