@@ -6,7 +6,12 @@
 
 QT       += core gui x11extras multimedia thelib
 CONFIG   += c++14
-LIBS     += -lX11 -lXtst
+
+unix {
+    CONFIG += link_pkgconfig
+    PKGCONFIG += x11 xtst hunspell
+}
+
 
 DBUS_ADAPTORS = org.thesuite.tskbd.xml
 
@@ -34,7 +39,8 @@ SOURCES += main.cpp\
     layouts/layoutus.cpp \
     keyboardstate.cpp \
     layouts/layoutsym.cpp \
-    settings.cpp
+    settings.cpp \
+    suggestionbar.cpp
 
 HEADERS  += \
     keyboardwindow.h \
@@ -43,13 +49,15 @@ HEADERS  += \
     layouts/layoutus.h \
     keyboardstate.h \
     layouts/layoutsym.h \
-    settings.h
+    settings.h \
+    suggestionbar.h
 
 FORMS    += \
     keyboardwindow.ui \
     layouts/layoutus.ui \
     layouts/layoutsym.ui \
-    settings.ui
+    settings.ui \
+    suggestionbar.ui
 
 RESOURCES += \
     resources.qrc

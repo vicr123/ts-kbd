@@ -58,12 +58,14 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
     usLayout->setFont(fnt);
     ui->keyboardsStack->addWidget(usLayout);
     connect(usLayout, SIGNAL(typeKey(unsigned long)), this, SLOT(pressKeySym(unsigned long)));
+    connect(usLayout, SIGNAL(pushLetter(QString)), ui->suggestionBar, SLOT(pushLetter(QString)));
     layouts.insert(enUS, usLayout);
 
     LayoutSym* symLayout = new LayoutSym();
     symLayout->setFont(fnt);
     ui->keyboardsStack->addWidget(symLayout);
     connect(symLayout, SIGNAL(typeKey(unsigned long)), this, SLOT(pressKeySym(unsigned long)));
+    connect(symLayout, SIGNAL(pushLetter(QString)), ui->suggestionBar, SLOT(pushLetter(QString)));
     layouts.insert(Symbol, symLayout);
 
     if (state->split()) {
@@ -207,6 +209,13 @@ void KeyboardWindow::pressKey() {
 }
 
 void KeyboardWindow::pressKeySym(unsigned long ks) {
+    if (ks == XK_BackSpace) {
+        ui->suggestionBar->backspace();
+    } else if (ks == XK_space || ks == XK_Return) {
+        //Complete word
+        ui->suggestionBar->acceptAutocorrection();
+    }
+
     if (state->shift() || state->capsLock()) {
         XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Shift_L), true, 0);
     }
@@ -511,6 +520,8 @@ void KeyboardWindow::screenResolutionResized() {
 void KeyboardWindow::hide() {
     QDialog::hide();
     emit keyboardVisibleChanged(false);
+
+    ui->suggestionBar->reset();
 }
 
 void KeyboardWindow::initTrayIcon() {
@@ -595,4 +606,40 @@ void KeyboardWindow::on_settingsButton_clicked()
 {
     Settings* settings = new Settings();
     settings->show();
+}
+
+void KeyboardWindow::on_suggestionBar_wordSelected(const QString &word, int charactersToBackspace)
+{
+    for (int i = 0; i < charactersToBackspace; i++) {
+        pressKeySym(XK_BackSpace);
+    }
+
+    for (QChar c : word) {
+        QString str(c);
+
+        QString keycode = str.toUtf8().toHex();
+
+        if (keycode.length() == 1) {
+            keycode.prepend("000");
+        } else if (keycode.length() == 2) {
+            keycode.prepend("00");
+        } else if (keycode.length() == 3) {
+            keycode.prepend("0");
+        }
+
+        keycode.prepend("U");
+
+        bool oldShiftState = state->shift();
+        if (c.isUpper()) {
+            state->setShift(true);
+        }
+        pressKeySym(XStringToKeysym(keycode.toLocal8Bit().constData()));
+        if (c.isUpper()) {
+            state->setShift(oldShiftState);
+        }
+    }
+}
+
+void KeyboardWindow::setKeyboardType(QString type) {
+
 }

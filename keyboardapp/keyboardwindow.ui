@@ -41,6 +41,9 @@
     <number>1</number>
    </property>
    <item>
+    <widget class="SuggestionBar" name="suggestionBar" native="true"/>
+   </item>
+   <item>
     <widget class="QStackedWidget" name="keyboardsStack">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -154,6 +157,12 @@
       </property>
       <item row="2" column="3">
        <widget class="QPushButton" name="f9Key">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>F9</string>
         </property>
@@ -161,6 +170,12 @@
       </item>
       <item row="0" column="6">
        <widget class="QPushButton" name="homeKey">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>80</width>
@@ -174,6 +189,12 @@
       </item>
       <item row="0" column="0">
        <widget class="QPushButton" name="escKey">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>ESC.</string>
         </property>
@@ -194,6 +215,12 @@
       </item>
       <item row="1" column="7">
        <widget class="QPushButton" name="pgDownKey">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>80</width>
@@ -207,6 +234,12 @@
       </item>
       <item row="3" column="2">
        <widget class="QPushButton" name="f11Key">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>F11</string>
         </property>
@@ -240,6 +273,12 @@
       </item>
       <item row="0" column="5">
        <widget class="QPushButton" name="insertKey">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>80</width>
@@ -295,6 +334,12 @@
       </item>
       <item row="4" column="0">
        <widget class="QPushButton" name="ctrlKey">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>CTRL</string>
         </property>
@@ -305,6 +350,12 @@
       </item>
       <item row="4" column="1">
        <widget class="QPushButton" name="altKey">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>ALT</string>
         </property>
@@ -315,6 +366,12 @@
       </item>
       <item row="0" column="1">
        <widget class="QPushButton" name="f1Key">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>F1</string>
         </property>
@@ -348,6 +405,12 @@
       </item>
       <item row="1" column="6">
        <widget class="QPushButton" name="endKey">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>80</width>
@@ -374,6 +437,12 @@
       </item>
       <item row="2" column="1">
        <widget class="QPushButton" name="f7Key">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>F7</string>
         </property>
@@ -381,6 +450,12 @@
       </item>
       <item row="1" column="5">
        <widget class="QPushButton" name="deleteKey">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>80</width>
@@ -394,6 +469,12 @@
       </item>
       <item row="0" column="2">
        <widget class="QPushButton" name="f2Key">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>F2</string>
         </property>
@@ -401,6 +482,12 @@
       </item>
       <item row="3" column="1">
        <widget class="QPushButton" name="f10Key">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>F10</string>
         </property>
@@ -408,6 +495,12 @@
       </item>
       <item row="0" column="3">
        <widget class="QPushButton" name="f3Key">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>F3</string>
         </property>
@@ -483,6 +576,12 @@
       </item>
       <item row="1" column="2">
        <widget class="QPushButton" name="f5Key">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>F5</string>
         </property>
@@ -490,6 +589,12 @@
       </item>
       <item row="0" column="7">
        <widget class="QPushButton" name="pgUpKey">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>80</width>
@@ -503,6 +608,12 @@
       </item>
       <item row="1" column="3">
        <widget class="QPushButton" name="f6Key">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>F6</string>
         </property>
@@ -510,6 +621,12 @@
       </item>
       <item row="3" column="3">
        <widget class="QPushButton" name="f12Key">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>F12</string>
         </property>
@@ -517,6 +634,12 @@
       </item>
       <item row="1" column="1">
        <widget class="QPushButton" name="f4Key">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>F4</string>
         </property>
@@ -537,6 +660,12 @@
       </item>
       <item row="2" column="2">
        <widget class="QPushButton" name="f8Key">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>F8</string>
         </property>
@@ -693,6 +822,12 @@
       </item>
       <item row="4" column="2">
        <widget class="QPushButton" name="superKey">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>SUPER</string>
         </property>
@@ -703,6 +838,12 @@
       </item>
       <item row="4" column="3">
        <widget class="QPushButton" name="settingsButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>SETTINGS</string>
         </property>
@@ -834,6 +975,12 @@
     <signal>touchMoved(QPoint)</signal>
     <signal>letGo(QPoint)</signal>
    </slots>
+  </customwidget>
+  <customwidget>
+   <class>SuggestionBar</class>
+   <extends>QWidget</extends>
+   <header>suggestionbar.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

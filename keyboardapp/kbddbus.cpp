@@ -32,3 +32,7 @@ int KbdDbus::height() {
 bool KbdDbus::keyboardVisible() {
     return mainWindow->isVisible();
 }
+
+void KbdDbus::setKeyboardType(QString type) {
+    mainWindow->setKeyboardType(type);
+}

@@ -14,5 +14,8 @@
     <method name="keyboardVisible">
       <arg type="b" direction="out"/>
     </method>
+    <method name="setKeyboardType">
+      <arg name="type" type="s" direction="in"/>
+    </method>
   </interface>
 </node>

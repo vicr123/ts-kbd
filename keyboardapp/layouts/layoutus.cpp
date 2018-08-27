@@ -82,7 +82,7 @@ LayoutUS::LayoutUS(QWidget *parent) :
         connect(keySound, SIGNAL(playingChanged()), keySound, SLOT(deleteLater()));
     });
 
-    if (state->split()) {
+    if (!state->split()) {
         ui->splitWidget1->setVisible(false);
         ui->splitWidget2->setVisible(false);
         ui->splitWidget3->setVisible(false);

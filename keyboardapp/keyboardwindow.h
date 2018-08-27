@@ -39,6 +39,7 @@ public:
     void hide();
     void buttonIterate(QWidget* widget);
     void initTrayIcon();
+    void setKeyboardType(QString type);
 
 private slots:
     void pressKey();
@@ -72,6 +73,8 @@ private slots:
     void pressKeySym(unsigned long ks);
 
     void on_settingsButton_clicked();
+
+    void on_suggestionBar_wordSelected(const QString &, int );
 
 signals:
     void keyboardVisibleChanged(bool isVisible);

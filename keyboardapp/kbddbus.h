@@ -20,6 +20,7 @@ public Q_SLOTS:
     Q_SCRIPTABLE void hideKeyboard();
     Q_SCRIPTABLE int height();
     Q_SCRIPTABLE bool keyboardVisible();
+    Q_SCRIPTABLE void setKeyboardType(QString type);
 
 private:
 

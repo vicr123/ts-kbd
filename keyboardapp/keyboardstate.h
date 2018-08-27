@@ -23,6 +23,7 @@ class KeyboardState : public QObject
         void capsLockChanged(bool isOn);
         void shiftChanged(bool isOn);
         void splitChanged(bool split);
+        void dictionariesChanged();
 
     public slots:
 
