@@ -29,7 +29,7 @@
     <number>0</number>
    </property>
    <property name="leftMargin">
-    <number>1</number>
+    <number>0</number>
    </property>
    <property name="topMargin">
     <number>0</number>
@@ -110,7 +110,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string/>
+         <string>ENGLISH (US)</string>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -848,7 +848,8 @@
          <string>SETTINGS</string>
         </property>
         <property name="icon">
-         <iconset theme="configure"/>
+         <iconset theme="configure">
+          <normaloff>.</normaloff>.</iconset>
         </property>
        </widget>
       </item>

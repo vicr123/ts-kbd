@@ -19,11 +19,15 @@ class KeyboardState : public QObject
 
         bool split();
         void setSplit(bool split);
+
+        void setEnterKeyType(Qt::EnterKeyType type);
+        Qt::EnterKeyType enterKeyType();
     signals:
         void capsLockChanged(bool isOn);
         void shiftChanged(bool isOn);
         void splitChanged(bool split);
         void dictionariesChanged();
+        void enterKeyTypeChanged(Qt::EnterKeyType type);
 
     public slots:
 
@@ -33,6 +37,7 @@ class KeyboardState : public QObject
         bool sp;
 
         QSettings settings;
+        Qt::EnterKeyType ret;
 };
 
 #endif // KEYBOARDSTATE_H

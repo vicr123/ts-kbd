@@ -41,7 +41,8 @@ SOURCES += main.cpp\
     layouts/layoutsym.cpp \
     settings.cpp \
     suggestionbar.cpp \
-    layouts/layoutnumeric.cpp
+    layouts/layoutnumeric.cpp \
+    specialKeys/returnkey.cpp
 
 HEADERS  += \
     keyboardwindow.h \
@@ -52,7 +53,8 @@ HEADERS  += \
     layouts/layoutsym.h \
     settings.h \
     suggestionbar.h \
-    layouts/layoutnumeric.h
+    layouts/layoutnumeric.h \
+    specialKeys/returnkey.h
 
 FORMS    += \
     keyboardwindow.ui \

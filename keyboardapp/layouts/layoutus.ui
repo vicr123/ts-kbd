@@ -232,12 +232,12 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <layout class="QHBoxLayout" name="middleLayout">
      <property name="spacing">
       <number>0</number>
      </property>
      <item>
-      <spacer name="horizontalSpacer">
+      <spacer name="leftSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -407,7 +407,7 @@
       </widget>
      </item>
      <item>
-      <widget class="KeyButton" name="returnButton">
+      <widget class="ReturnKey" name="returnButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -646,6 +646,11 @@
     <signal>touchMoved(QPoint)</signal>
     <signal>letGo(QPoint)</signal>
    </slots>
+  </customwidget>
+  <customwidget>
+   <class>ReturnKey</class>
+   <extends>QPushButton</extends>
+   <header>specialKeys/returnkey.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

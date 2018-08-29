@@ -279,8 +279,10 @@ void KeyboardWindow::pressKeySym(unsigned long ks) {
 
 void KeyboardWindow::show() {
     this->setWindowFlags(Qt::Dialog | Qt::WindowStaysOnTopHint | Qt::SubWindow);
-    this->setFixedHeight(this->sizeHint().height());
+    //this->setFixedHeight(this->sizeHint().height());
+    this->setFixedHeight(300 * getDPIScaling());
     setKeyboardType("normal");
+    setPredictive(true);
 
     Atom DesktopWindowTypeAtom;
     DesktopWindowTypeAtom = XInternAtom(QX11Info::display(), "_NET_WM_WINDOW_TYPE_DOCK", False);
@@ -658,14 +660,33 @@ void KeyboardWindow::changeGeometry() {
 void KeyboardWindow::setKeyboardType(QString type) {
     qDebug() << "Set type to " + type;
     if (type == "normal") {
-        currentKeyboardLayout = defaultKeyboardLayout;
-        ui->keyboardsStack->setCurrentWidget(layouts.value(enUS));
+        changeKeyboard(enUS);
         ui->suggestionBar->setVisible(true);
     } else if (type == "numeric") {
-        currentKeyboardLayout = Numeric;
-        ui->keyboardsStack->setCurrentWidget(layouts.value(Numeric));
+        changeKeyboard(Numeric);
         ui->suggestionBar->setVisible(false);
     }
     //this->setFixedHeight(this->sizeHint().height());
     //changeGeometry();
+}
+
+void KeyboardWindow::changeKeyboard(Layouts layout) {
+    currentKeyboardLayout = layout;
+    ui->keyboardsStack->setCurrentWidget(layouts.value(layout));
+
+    switch (layout) {
+        case enUS:
+            ui->spaceButton->setText("ENGLISH (US)");
+            break;
+        case Symbol:
+            ui->spaceButton->setText("SYMBOLS");
+            break;
+        case Numeric:
+            ui->spaceButton->setText("NUMERIC");
+            break;
+    }
+}
+
+void KeyboardWindow::setPredictive(bool predictive) {
+    ui->suggestionBar->setVisible(predictive);
 }

@@ -17,5 +17,20 @@
     <method name="setKeyboardType">
       <arg name="type" type="s" direction="in"/>
     </method>
+    <method name="setPredictive">
+      <arg name="predictive" type="b" direction="in"/>
+    </method>
+    <method name="setHidden">
+      <arg name="hidden" type="b" direction="in"/>
+    </method>
+    <method name="setSensitive">
+      <arg name="sensitive" type="b" direction="in"/>
+    </method>
+    <method name="setAutoUppercase">
+      <arg name="autoUpperCase" type="b" direction="in"/>
+    </method>
+    <method name="setEnterKeyType">
+      <arg name="enterKeyType" type="s" direction="in"/>
+    </method>
   </interface>
 </node>

@@ -36,3 +36,12 @@ void KeyboardState::setSplit(bool split) {
     settings.setValue("keyboard/split", split);
     emit splitChanged(split);
 }
+
+void KeyboardState::setEnterKeyType(Qt::EnterKeyType type) {
+    ret = type;
+    emit enterKeyTypeChanged(type);
+}
+
+Qt::EnterKeyType KeyboardState::enterKeyType() {
+    return ret;
+}

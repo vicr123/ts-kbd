@@ -133,6 +133,8 @@ void SuggestionBar::updateSuggestions() {
             button->setFont(f);
             pendingAutocorrect = false;
             tentativeCorrection = suggestion;
+        } else {
+            button->setFlat(true);
         }
 
         firstWord = false;

@@ -28,13 +28,42 @@ void InputContext::showInputPanel() {
     tVirtualKeyboard::instance()->showKeyboard();
 
     if (focusObject != nullptr) {
-        QInputMethodQueryEvent event(Qt::ImHints);
+        QInputMethodQueryEvent event(Qt::ImHints | Qt::ImEnterKeyType);
         QCoreApplication::sendEvent(focusObject, &event);
 
         Qt::InputMethodHints hints = (Qt::InputMethodHints) event.value(Qt::ImHints).toInt();
         qDebug() << hints;
         if (hints.testFlag(Qt::ImhDigitsOnly) || hints.testFlag(Qt::ImhPreferNumbers) || hints.testFlag(Qt::ImhTime) || hints.testFlag(Qt::ImhDate)) {
             tVirtualKeyboard::instance()->setKeyboardType("numeric");
+        }
+        if (hints.testFlag(Qt::ImhNoPredictiveText)) {
+            tVirtualKeyboard::instance()->setPredictive(false);
+        }
+
+        Qt::EnterKeyType enter = (Qt::EnterKeyType) event.value(Qt::ImEnterKeyType).toInt();
+        switch (enter) {
+            case Qt::EnterKeyDefault:
+            case Qt::EnterKeyReturn:
+                tVirtualKeyboard::instance()->setEnterKeyType("return");
+                break;
+            case Qt::EnterKeyDone:
+                tVirtualKeyboard::instance()->setEnterKeyType("done");
+                break;
+            case Qt::EnterKeyGo:
+                tVirtualKeyboard::instance()->setEnterKeyType("go");
+                break;
+            case Qt::EnterKeyNext:
+                tVirtualKeyboard::instance()->setEnterKeyType("next");
+                break;
+            case Qt::EnterKeyPrevious:
+                tVirtualKeyboard::instance()->setEnterKeyType("previous");
+                break;
+            case Qt::EnterKeySearch:
+                tVirtualKeyboard::instance()->setEnterKeyType("search");
+                break;
+            case Qt::EnterKeySend:
+                tVirtualKeyboard::instance()->setEnterKeyType("send");
+                break;
         }
     }
 }

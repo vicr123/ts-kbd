@@ -41,6 +41,8 @@ public:
     void buttonIterate(QWidget* widget);
     void initTrayIcon();
     void setKeyboardType(QString type);
+    void setPredictive(bool predictive);
+    void changeKeyboard(Layouts layout);
 
 private slots:
     void pressKey();

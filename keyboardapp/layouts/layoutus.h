@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QDateTime>
 #include <QSettings>
+#include <QLabel>
 
 namespace Ui {
 class LayoutUS;
@@ -28,8 +29,14 @@ signals:
 private:
     Ui::LayoutUS *ui;
 
+    void resizeEvent(QResizeEvent* event);
+    bool event(QEvent* event);
+
     QDateTime capsLockPressedTime = QDateTime::currentDateTime();
     QSettings settings;
+
+    QWidget* extraKey;
+    QLabel* extraKeyLabel;
 };
 
 #endif // LAYOUTUS_H

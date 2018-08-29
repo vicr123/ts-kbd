@@ -21,6 +21,11 @@ public Q_SLOTS:
     Q_SCRIPTABLE int height();
     Q_SCRIPTABLE bool keyboardVisible();
     Q_SCRIPTABLE void setKeyboardType(QString type);
+    Q_SCRIPTABLE void setPredictive(bool predictive);
+    Q_SCRIPTABLE void setHidden(bool hidden);
+    Q_SCRIPTABLE void setSensitive(bool sensitive);
+    Q_SCRIPTABLE void setAutoUppercase(bool autoUpperCase);
+    Q_SCRIPTABLE void setEnterKeyType(QString enterKeyType);
 
 private:
 
