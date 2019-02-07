@@ -120,7 +120,6 @@ LayoutUS::LayoutUS(QWidget *parent) :
     //layout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding));
 
     extraKeyLabel = new QLabel();
-    extraKeyLabel->setText("⇄ TAB");
     extraKeyLabel->setMargin(9 * getDPIScaling());
     layout->addWidget(extraKeyLabel);
 
@@ -232,9 +231,22 @@ bool LayoutUS::event(QEvent* event) {
         QTouchEvent* e = (QTouchEvent*) event;
         QPoint touchPoint = e->touchPoints().first().pos().toPoint();
         if (touchPoint.x() < 5 && ui->middleLayout->geometry().contains(touchPoint)) {
-            extraKey->move(ui->middleLayout->geometry().top(), -extraKey->sizeHint().width());
+            //Tab key
+            extraKeyLabel->setText("⇄ TAB");
+            extraKeyTop = ui->middleLayout->geometry().top();
+            extraKey->move(extraKeyTop, -extraKey->sizeHint().width());
             extraKey->setFixedWidth(extraKey->sizeHint().width());
             extraKey->setFixedHeight(ui->middleLayout->geometry().height());
+            extraKey->setVisible(true);
+            e->accept();
+            return true;
+        } else if (touchPoint.x() < 5 && ui->topLayout->geometry().contains(touchPoint)) {
+            //Escape key
+            extraKeyLabel->setText("⎋ ESC");
+            extraKeyTop = ui->topLayout->geometry().top();
+            extraKey->move(extraKeyTop, -extraKey->sizeHint().width());
+            extraKey->setFixedWidth(extraKey->sizeHint().width());
+            extraKey->setFixedHeight(ui->topLayout->geometry().height());
             extraKey->setVisible(true);
             e->accept();
             return true;
@@ -244,12 +256,17 @@ bool LayoutUS::event(QEvent* event) {
         QPoint touchPoint = e->touchPoints().first().pos().toPoint();
         int left = -extraKey->width() + touchPoint.x();
         if (left > 0) left = 0;
-        extraKey->move(left, ui->middleLayout->geometry().top());
+        extraKey->move(left, extraKeyTop);
         return true;
     } else if (event->type() == QEvent::TouchEnd) {
         if (extraKey->geometry().left() == 0) {
-            //Press tab key
-            emit typeKey(XK_Tab);
+            if (extraKeyTop == ui->middleLayout->geometry().top()) {
+                //Press tab key
+                emit typeKey(XK_Tab);
+            } else if (extraKeyTop == ui->topLayout->geometry().top()) {
+                //Press escape key
+                emit typeKey(XK_Escape);
+            }
         }
 
         tVariantAnimation* anim = new tVariantAnimation();
@@ -258,7 +275,7 @@ bool LayoutUS::event(QEvent* event) {
         anim->setDuration(500);
         anim->setEasingCurve(QEasingCurve::OutCubic);
         connect(anim, &tVariantAnimation::valueChanged, [=](QVariant value) {
-            extraKey->move(value.toInt(), ui->middleLayout->geometry().top());
+            extraKey->move(value.toInt(), extraKeyTop);
         });
         connect(anim, SIGNAL(finished()), anim, SLOT(deleteLater()));
         anim->start();

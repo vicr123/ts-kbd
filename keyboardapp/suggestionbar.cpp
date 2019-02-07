@@ -158,3 +158,12 @@ void SuggestionBar::acceptAutocorrection() {
     }
     reset();
 }
+
+void SuggestionBar::on_clearSuggestionBarButton_clicked()
+{
+    this->reset();
+}
+
+QPushButton* SuggestionBar::clearButton() {
+    return ui->clearSuggestionBarButton;
+}

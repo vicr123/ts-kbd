@@ -16,6 +16,7 @@
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
 #include <X11/extensions/XTest.h>
+#include <unistd.h>
 
 #undef Bool
 #undef CursorShape
@@ -34,6 +35,7 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
 
     this->layout()->removeWidget(ui->otherKeyboardsFrame);
     this->setFixedHeight(this->sizeHint().height());
+    ui->keyboardsStack->setCurrentAnimation(tStackedWidget::Fade);
 
     ui->otherKeyboardsFrame->setParent(this);
     ui->otherKeyboardsFrame->setGeometry(0, this->height(), this->width(), this->height());
@@ -89,6 +91,11 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
     });
 
     connect(QApplication::desktop(), SIGNAL(resized(int)), this, SLOT(screenResolutionResized()));
+
+    if (geteuid() == 0) {
+        //Don't want the user to open settings in theDM
+        ui->settingsButton->setEnabled(false);
+    }
 }
 
 KeyboardWindow::~KeyboardWindow()
@@ -112,7 +119,7 @@ void KeyboardWindow::buttonIterate(QWidget* wid) {
 void KeyboardWindow::pressKey() {
     QPushButton* button = (QPushButton*) sender();
 
-    if (button == ui->ctrlKey || button == ui->altKey || button == ui->superKey || button == ui->changeButton || button == ui->hideKeyboard) return;
+    if (button == ui->ctrlKey || button == ui->altKey || button == ui->superKey || button == ui->changeButton || button == ui->hideKeyboard || button == ui->suggestionBar->clearButton()) return;
 
     Window focused;
     int revert_to;
@@ -138,6 +145,14 @@ void KeyboardWindow::pressKey() {
             ignoreSpaceBar = false;
             return;
         }
+
+        if (spacePressed.msecsTo(QDateTime::currentDateTime()) < 1000 && !spaceReplacementDone) {
+            pressKeySym(XK_BackSpace);
+            pressKeySym(XK_period);
+            spaceReplacementDone = true;
+        }
+
+        spacePressed = QDateTime::currentDateTime();
         pressedKey = XK_space;
     } else if (button == ui->tabButton) {
         pressedKey = XK_Tab;
@@ -214,10 +229,19 @@ void KeyboardWindow::pressKey() {
         useKeySym = true;
     }
 
+    if (pressedKey != XK_space && pressedKey != XK_BackSpace) {
+        spaceReplacementDone = false;
+    }
+
     pressKeySym(pressedKey);
 }
 
 void KeyboardWindow::pressKeySym(unsigned long ks) {
+    if (ks != XK_space && ks != XK_BackSpace) {
+        spaceReplacementDone = false;
+        spacePressed = QDateTime::fromMSecsSinceEpoch(0);
+    }
+
     if (ks == XK_BackSpace) {
         ui->suggestionBar->backspace();
     } else if (ks == XK_space || ks == XK_Return) {
@@ -659,12 +683,18 @@ void KeyboardWindow::changeGeometry() {
 
 void KeyboardWindow::setKeyboardType(QString type) {
     qDebug() << "Set type to " + type;
+
+    ui->urlSlashButton->setVisible(false);
     if (type == "normal") {
         changeKeyboard(enUS);
         ui->suggestionBar->setVisible(true);
     } else if (type == "numeric") {
         changeKeyboard(Numeric);
         ui->suggestionBar->setVisible(false);
+    } else if (type == "url") {
+        changeKeyboard(enUS);
+        ui->suggestionBar->setVisible(false);
+        ui->urlSlashButton->setVisible(true);
     }
     //this->setFixedHeight(this->sizeHint().height());
     //changeGeometry();

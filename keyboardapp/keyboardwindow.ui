@@ -44,7 +44,7 @@
     <widget class="SuggestionBar" name="suggestionBar" native="true"/>
    </item>
    <item>
-    <widget class="QStackedWidget" name="keyboardsStack">
+    <widget class="tStackedWidget" name="keyboardsStack">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
        <horstretch>0</horstretch>
@@ -111,6 +111,22 @@
         </property>
         <property name="text">
          <string>ENGLISH (US)</string>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="KeyButton" name="urlSlashButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>1</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>/</string>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -967,6 +983,12 @@
   </layout>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>tStackedWidget</class>
+   <extends>QStackedWidget</extends>
+   <header location="global">tstackedwidget.h</header>
+   <container>1</container>
+  </customwidget>
   <customwidget>
    <class>KeyButton</class>
    <extends>QPushButton</extends>

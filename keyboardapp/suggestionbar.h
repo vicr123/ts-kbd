@@ -21,6 +21,7 @@ public:
     ~SuggestionBar();
 
     bool hasAutocorrection();
+    QPushButton* clearButton();
 
 public slots:
     void pushLetter(QString letter);
@@ -34,7 +35,10 @@ public slots:
 signals:
     void wordSelected(QString word, int charactersToBackspace);
 
-private:
+    private slots:
+    void on_clearSuggestionBarButton_clicked();
+
+    private:
     Ui::SuggestionBar *ui;
 
     QList<KeyButton*> suggestions;

@@ -35,6 +35,8 @@ private:
     QDateTime capsLockPressedTime = QDateTime::currentDateTime();
     QSettings settings;
 
+    int extraKeyTop;
+
     QWidget* extraKey;
     QLabel* extraKeyLabel;
 };

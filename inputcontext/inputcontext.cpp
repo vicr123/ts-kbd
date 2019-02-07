@@ -36,6 +36,9 @@ void InputContext::showInputPanel() {
         if (hints.testFlag(Qt::ImhDigitsOnly) || hints.testFlag(Qt::ImhPreferNumbers) || hints.testFlag(Qt::ImhTime) || hints.testFlag(Qt::ImhDate)) {
             tVirtualKeyboard::instance()->setKeyboardType("numeric");
         }
+        if (hints.testFlag(Qt::ImhUrlCharactersOnly)) {
+            tVirtualKeyboard::instance()->setKeyboardType("url");
+        }
         if (hints.testFlag(Qt::ImhNoPredictiveText)) {
             tVirtualKeyboard::instance()->setPredictive(false);
         }

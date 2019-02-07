@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui x11extras multimedia thelib
+LIBS     += -lthe-libs
 CONFIG   += c++14
 
 unix {

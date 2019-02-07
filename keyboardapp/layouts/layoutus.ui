@@ -35,9 +35,12 @@
     <number>0</number>
    </property>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="topLayout">
      <property name="spacing">
       <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>1</number>
      </property>
      <item>
       <widget class="KeyButton" name="qButton">

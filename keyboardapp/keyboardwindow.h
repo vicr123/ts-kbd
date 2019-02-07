@@ -100,6 +100,8 @@ private:
 
     QMap<Layouts, QWidget*> layouts;
     Layouts defaultKeyboardLayout = enUS, currentKeyboardLayout;
+    QDateTime spacePressed = QDateTime::fromMSecsSinceEpoch(0);
+    bool spaceReplacementDone = false;
 
     QSettings settings;
 };
