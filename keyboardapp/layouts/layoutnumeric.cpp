@@ -10,7 +10,7 @@
 extern KeyboardState* state;
 
 LayoutNumeric::LayoutNumeric(QWidget *parent) :
-    QWidget(parent),
+    Layout(parent),
     ui(new Ui::LayoutNumeric)
 {
     ui->setupUi(this);
@@ -21,6 +21,10 @@ LayoutNumeric::LayoutNumeric(QWidget *parent) :
 LayoutNumeric::~LayoutNumeric()
 {
     delete ui;
+}
+
+Layout::Layouts LayoutNumeric::layoutType() {
+    return Numeric;
 }
 
 void LayoutNumeric::buttonIterate(QWidget* wid) {

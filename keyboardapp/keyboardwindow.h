@@ -17,6 +17,7 @@
 #include <tpropertyanimation.h>
 #include <QLayout>
 #include <QSettings>
+#include "layouts/layout.h"
 
 namespace Ui {
 class KeyboardWindow;
@@ -30,19 +31,13 @@ public:
     explicit KeyboardWindow(QWidget *parent = nullptr);
     ~KeyboardWindow();
 
-    enum Layouts {
-        enUS,
-        Symbol,
-        Numeric
-    };
-
     void show();
     void hide();
     void buttonIterate(QWidget* widget);
     void initTrayIcon();
     void setKeyboardType(QString type);
     void setPredictive(bool predictive);
-    void changeKeyboard(Layouts layout);
+    void changeKeyboard(Layout::Layouts layout);
 
 private slots:
     void pressKey();
@@ -75,13 +70,17 @@ private slots:
 
     void pressKeySym(unsigned long ks);
 
+    void pressLetter(QString letter);
+
     void on_settingsButton_clicked();
 
     void on_suggestionBar_wordSelected(const QString &, int );
 
     void changeGeometry();
 
-signals:
+    void on_emojiButton_clicked();
+
+    signals:
     void keyboardVisibleChanged(bool isVisible);
 
 private:
@@ -98,8 +97,8 @@ private:
     QPoint spaceBarInitialPoint;
     int spaceBarLastMovePoint;
 
-    QMap<Layouts, QWidget*> layouts;
-    Layouts defaultKeyboardLayout = enUS, currentKeyboardLayout;
+    QMap<Layout::Layouts, Layout*> layouts;
+    Layout::Layouts defaultKeyboardLayout = Layout::enUS, currentKeyboardLayout;
     QDateTime spacePressed = QDateTime::fromMSecsSinceEpoch(0);
     bool spaceReplacementDone = false;
 

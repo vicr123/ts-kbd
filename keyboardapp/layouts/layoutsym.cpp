@@ -2,6 +2,7 @@
 #include "ui_layoutsym.h"
 
 #include <QSoundEffect>
+#include <QX11Info>
 #include "keyboardstate.h"
 
 #include <X11/Xlib.h>
@@ -10,7 +11,7 @@
 extern KeyboardState* state;
 
 LayoutSym::LayoutSym(QWidget *parent) :
-    QWidget(parent),
+    Layout(parent),
     ui(new Ui::LayoutSym)
 {
     ui->setupUi(this);
@@ -21,6 +22,10 @@ LayoutSym::LayoutSym(QWidget *parent) :
 LayoutSym::~LayoutSym()
 {
     delete ui;
+}
+
+Layout::Layouts LayoutSym::layoutType() {
+    return Symbol;
 }
 
 void LayoutSym::buttonIterate(QWidget* wid) {
@@ -60,30 +65,8 @@ void LayoutSym::pressKey() {
     if (button == ui->backspace) {
         pressedKey = XK_BackSpace;
     } else {
-        //Register keycode with desired character
-        //int kc = findEmptyKeycode();
-        QString keycode = button->text().toUtf8().toHex();
-        if (button->text() == "&&") keycode = QString("&").toUtf8().toHex();
-
-        if (keycode.length() == 1) {
-            keycode.prepend("000");
-        } else if (keycode.length() == 2) {
-            keycode.prepend("00");
-        } else if (keycode.length() == 3) {
-            keycode.prepend("0");
-        }
-
-        keycode.prepend("U");
-        pressedKey = XStringToKeysym(keycode.toLocal8Bit().constData());
-
-        emit pushLetter(button->text());
-
-        /*KeySym ksList[] = {
-            pressedKey
-        };
-        qDebug() << XChangeKeyboardMapping(QX11Info::display(), kc, 1, ksList, 1);
-        pressedKeyCode = kc;
-        useKeySym = true;*/
+        typeString(button->text());
+        return;
     }
 
     emit typeKey(pressedKey);

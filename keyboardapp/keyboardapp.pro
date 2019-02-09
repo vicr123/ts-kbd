@@ -43,7 +43,9 @@ SOURCES += main.cpp\
     settings.cpp \
     suggestionbar.cpp \
     layouts/layoutnumeric.cpp \
-    specialKeys/returnkey.cpp
+    specialKeys/returnkey.cpp \
+    layouts/layout.cpp \
+    layouts/layoutemoji.cpp
 
 HEADERS  += \
     keyboardwindow.h \
@@ -55,7 +57,9 @@ HEADERS  += \
     settings.h \
     suggestionbar.h \
     layouts/layoutnumeric.h \
-    specialKeys/returnkey.h
+    specialKeys/returnkey.h \
+    layouts/layout.h \
+    layouts/layoutemoji.h
 
 FORMS    += \
     keyboardwindow.ui \
@@ -63,7 +67,8 @@ FORMS    += \
     layouts/layoutsym.ui \
     settings.ui \
     suggestionbar.ui \
-    layouts/layoutnumeric.ui
+    layouts/layoutnumeric.ui \
+    layouts/layoutemoji.ui
 
 RESOURCES += \
     resources.qrc

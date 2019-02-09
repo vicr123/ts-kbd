@@ -3,4 +3,7 @@
         <file>keyclickErase.wav</file>
         <file>keyclick.wav</file>
     </qresource>
+    <qresource prefix="/">
+        <file>data/emoji-test.txt</file>
+    </qresource>
 </RCC>

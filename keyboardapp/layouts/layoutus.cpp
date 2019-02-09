@@ -13,7 +13,7 @@ extern KeyboardState* state;
 extern float getDPIScaling();
 
 LayoutUS::LayoutUS(QWidget *parent) :
-    QWidget(parent),
+    Layout(parent),
     ui(new Ui::LayoutUS)
 {
     ui->setupUi(this);
@@ -139,6 +139,10 @@ LayoutUS::LayoutUS(QWidget *parent) :
 LayoutUS::~LayoutUS()
 {
     delete ui;
+}
+
+Layout::Layouts LayoutUS::layoutType() {
+    return enUS;
 }
 
 void LayoutUS::buttonIterate(QWidget* wid) {

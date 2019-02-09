@@ -102,6 +102,22 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="emojiButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>1</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string notr="true">😃</string>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="KeyButton" name="spaceButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -984,12 +1000,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>tStackedWidget</class>
-   <extends>QStackedWidget</extends>
-   <header location="global">tstackedwidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>KeyButton</class>
    <extends>QPushButton</extends>
    <header>keybutton.h</header>
@@ -998,6 +1008,12 @@
     <signal>touchMoved(QPoint)</signal>
     <signal>letGo(QPoint)</signal>
    </slots>
+  </customwidget>
+  <customwidget>
+   <class>tStackedWidget</class>
+   <extends>QStackedWidget</extends>
+   <header location="global">tstackedwidget.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>SuggestionBar</class>

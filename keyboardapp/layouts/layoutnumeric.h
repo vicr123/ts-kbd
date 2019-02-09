@@ -4,12 +4,13 @@
 #include <QWidget>
 #include <QDateTime>
 #include <QSettings>
+#include "layout.h"
 
 namespace Ui {
 class LayoutNumeric;
 }
 
-class LayoutNumeric : public QWidget
+class LayoutNumeric : public Layout
 {
     Q_OBJECT
 
@@ -17,13 +18,11 @@ public:
     explicit LayoutNumeric(QWidget *parent = nullptr);
     ~LayoutNumeric();
 
+    Layouts layoutType();
+
 public slots:
     void pressKey();
     void buttonIterate(QWidget* wid);
-
-signals:
-    void typeKey(unsigned long key);
-    void pushLetter(QString letter);
 
 private:
     Ui::LayoutNumeric *ui;

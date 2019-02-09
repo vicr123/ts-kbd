@@ -4,11 +4,14 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QPainter>
+#include <QClipboard>
+#include <QMimeData>
 #include "keyboardstate.h"
 
 #include "layouts/layoutus.h"
 #include "layouts/layoutsym.h"
 #include "layouts/layoutnumeric.h"
+#include "layouts/layoutemoji.h"
 
 #include "settings.h"
 
@@ -59,26 +62,26 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
 
     buttonIterate(this);
 
+
     LayoutUS* usLayout = new LayoutUS();
-    usLayout->setFont(fnt);
-    ui->keyboardsStack->addWidget(usLayout);
-    connect(usLayout, SIGNAL(typeKey(unsigned long)), this, SLOT(pressKeySym(unsigned long)));
-    connect(usLayout, SIGNAL(pushLetter(QString)), ui->suggestionBar, SLOT(pushLetter(QString)));
-    layouts.insert(enUS, usLayout);
-
     LayoutSym* symLayout = new LayoutSym();
-    symLayout->setFont(fnt);
-    ui->keyboardsStack->addWidget(symLayout);
-    connect(symLayout, SIGNAL(typeKey(unsigned long)), this, SLOT(pressKeySym(unsigned long)));
-    connect(symLayout, SIGNAL(pushLetter(QString)), ui->suggestionBar, SLOT(pushLetter(QString)));
-    layouts.insert(Symbol, symLayout);
-
     LayoutNumeric* numLayout = new LayoutNumeric();
-    numLayout->setFont(fnt);
-    ui->keyboardsStack->addWidget(numLayout);
-    connect(numLayout, SIGNAL(typeKey(unsigned long)), this, SLOT(pressKeySym(unsigned long)));
-    connect(numLayout, SIGNAL(pushLetter(QString)), ui->suggestionBar, SLOT(pushLetter(QString)));
-    layouts.insert(Numeric, numLayout);
+    LayoutEmoji* emojiLayout = new LayoutEmoji();
+
+    Layout* layouts[] = {
+        usLayout,
+        symLayout,
+        numLayout,
+        emojiLayout
+    };
+    for (Layout* layout : layouts) {
+        layout->setFont(fnt);
+        ui->keyboardsStack->addWidget(layout);
+        connect(layout, SIGNAL(typeKey(unsigned long)), this, SLOT(pressKeySym(unsigned long)));
+        connect(layout, SIGNAL(typeLetter(QString)), this, SLOT(pressLetter(QString)));
+        connect(layout, SIGNAL(pushLetter(QString)), ui->suggestionBar, SLOT(pushLetter(QString)));
+        this->layouts.insert(layout->layoutType(), layout);
+    }
 
     if (state->split()) {
         ui->spaceButton->sizePolicy().setHorizontalStretch(10);
@@ -305,6 +308,27 @@ void KeyboardWindow::pressKeySym(unsigned long ks) {
     connect(keySound, SIGNAL(playingChanged()), keySound, SLOT(deleteLater()));
 }
 
+void KeyboardWindow::pressLetter(QString letter) {
+    //Preserve the old clipboard data
+    const QMimeData* oldData = QApplication::clipboard()->mimeData();
+    QMimeData* newData = new QMimeData();
+
+    for (QString fmt : oldData->formats()) {
+        newData->setData(fmt, oldData->data(fmt));
+    }
+
+    //Paste the clipboard text
+    QApplication::clipboard()->setText(letter);
+    XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Control_L), true, 0);
+    XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_V), true, 0);
+    XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_V), false, 0);
+    XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Control_L), false, 0);
+
+    //Reset the old clipboard data
+    QTimer::singleShot(100, [=] {
+        QApplication::clipboard()->setMimeData(newData);
+    });
+}
 
 void KeyboardWindow::show() {
     this->setWindowFlags(Qt::Dialog | Qt::WindowStaysOnTopHint | Qt::SubWindow);
@@ -330,8 +354,8 @@ void KeyboardWindow::show() {
 }
 
 void KeyboardWindow::on_changeButton_clicked() {
-    if (ui->keyboardsStack->currentWidget() != layouts.value(Symbol)) {
-        ui->keyboardsStack->setCurrentWidget(layouts.value(Symbol));
+    if (ui->keyboardsStack->currentWidget() != layouts.value(Layout::Symbol)) {
+        ui->keyboardsStack->setCurrentWidget(layouts.value(Layout::Symbol));
     } else {
         ui->keyboardsStack->setCurrentWidget(layouts.value(currentKeyboardLayout));
     }
@@ -691,13 +715,13 @@ void KeyboardWindow::setKeyboardType(QString type) {
 
     ui->urlSlashButton->setVisible(false);
     if (type == "normal") {
-        changeKeyboard(enUS);
+        changeKeyboard(Layout::enUS);
         ui->suggestionBar->setVisible(true);
     } else if (type == "numeric") {
-        changeKeyboard(Numeric);
+        changeKeyboard(Layout::Numeric);
         ui->suggestionBar->setVisible(false);
     } else if (type == "url") {
-        changeKeyboard(enUS);
+        changeKeyboard(Layout::enUS);
         ui->suggestionBar->setVisible(false);
         ui->urlSlashButton->setVisible(true);
     }
@@ -705,23 +729,40 @@ void KeyboardWindow::setKeyboardType(QString type) {
     //changeGeometry();
 }
 
-void KeyboardWindow::changeKeyboard(Layouts layout) {
+void KeyboardWindow::changeKeyboard(Layout::Layouts layout) {
     currentKeyboardLayout = layout;
     ui->keyboardsStack->setCurrentWidget(layouts.value(layout));
 
     switch (layout) {
-        case enUS:
+        case Layout::enUS:
             ui->spaceButton->setText("ENGLISH (US)");
             break;
-        case Symbol:
+        case Layout::Symbol:
             ui->spaceButton->setText("SYMBOLS");
             break;
-        case Numeric:
+        case Layout::Numeric:
             ui->spaceButton->setText("NUMERIC");
+            break;
+        case Layout::Emoji:
+            ui->spaceButton->setText("EMOJI");
             break;
     }
 }
 
 void KeyboardWindow::setPredictive(bool predictive) {
     ui->suggestionBar->setVisible(predictive);
+}
+
+void KeyboardWindow::on_emojiButton_clicked()
+{
+    if (ui->keyboardsStack->currentWidget() != layouts.value(Layout::Emoji)) {
+        ui->keyboardsStack->setCurrentWidget(layouts.value(Layout::Emoji));
+    } else {
+        ui->keyboardsStack->setCurrentWidget(layouts.value(currentKeyboardLayout));
+    }
+
+    QSoundEffect* keySound = new QSoundEffect();
+    keySound->setSource(QUrl("qrc:/sounds/keyclickErase.wav"));
+    keySound->play();
+    connect(keySound, SIGNAL(playingChanged()), keySound, SLOT(deleteLater()));
 }

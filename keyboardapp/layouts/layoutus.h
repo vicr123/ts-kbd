@@ -5,12 +5,13 @@
 #include <QDateTime>
 #include <QSettings>
 #include <QLabel>
+#include "layout.h"
 
 namespace Ui {
 class LayoutUS;
 }
 
-class LayoutUS : public QWidget
+class LayoutUS : public Layout
 {
     Q_OBJECT
 
@@ -18,13 +19,11 @@ public:
     explicit LayoutUS(QWidget *parent = nullptr);
     ~LayoutUS();
 
+    Layouts layoutType();
+
 public slots:
     void pressKey();
     void buttonIterate(QWidget* wid);
-
-signals:
-    void typeKey(unsigned long key);
-    void pushLetter(QString letter);
 
 private:
     Ui::LayoutUS *ui;
