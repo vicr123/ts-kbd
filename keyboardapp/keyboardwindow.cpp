@@ -16,6 +16,7 @@
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
 #include <X11/extensions/XTest.h>
+#include <X11/XKBlib.h>
 #include <unistd.h>
 
 #undef Bool
@@ -249,7 +250,20 @@ void KeyboardWindow::pressKeySym(unsigned long ks) {
         ui->suggestionBar->acceptAutocorrection();
     }
 
-    if (state->shift() || state->capsLock()) {
+    int keysymNumber = -1;
+    int keysymsPerKeycode;
+    KeySym* keysyms = XGetKeyboardMapping(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), ks), 1, &keysymsPerKeycode);
+
+    if (keysyms == nullptr) return; //Unknown key
+    for (int i = 0; i < keysymsPerKeycode; i++) {
+        if (keysyms[i] == ks) {
+            keysymNumber = i;
+            break;
+        }
+    }
+
+
+    if (state->shift() || state->capsLock() || keysymNumber == 1) {
         XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Shift_L), true, 0);
     }
     if (ui->ctrlKey->isChecked()) {
@@ -262,17 +276,8 @@ void KeyboardWindow::pressKeySym(unsigned long ks) {
         XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Super_L), true, 0);
     }
 
-    //if (useKeySym) {
-        XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), ks), true, 0);
-        XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), ks), false, 0);
-    /*} else {
-        XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), pressedKeyCode), true, 0);
-        XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), pressedKeyCode), false, 0);
-
-        //Revert Keysym
-        KeySym ksList[1] = { 0 };
-        XChangeKeyboardMapping(QX11Info::display(), pressedKeyCode, 1, ksList, 1);
-    }*/
+    XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), ks), true, 0);
+    XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), ks), false, 0);
 
     if (ui->superKey->isChecked()) {
         XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Super_L), false, 0);
@@ -283,7 +288,7 @@ void KeyboardWindow::pressKeySym(unsigned long ks) {
     if (ui->ctrlKey->isChecked()) {
         XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Control_L), false, 0);
     }
-    if (state->shift() || state->capsLock()) {
+    if (state->shift() || state->capsLock() || keysymNumber == 1) {
         XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Shift_L), false, 0);
     }
     XFlush(QX11Info::display());
