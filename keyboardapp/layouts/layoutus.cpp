@@ -50,6 +50,8 @@ LayoutUS::LayoutUS(QWidget *parent) :
             ui->bButton->setText("B");
             ui->nButton->setText("N");
             ui->mButton->setText("M");
+
+            ui->aButton->setSupplementaryCharacters({"Á", "Â", "Ä", "À", "Ã"});
         } else {
             ui->qButton->setText("q");
             ui->wButton->setText("w");
@@ -79,6 +81,8 @@ LayoutUS::LayoutUS(QWidget *parent) :
             ui->bButton->setText("b");
             ui->nButton->setText("n");
             ui->mButton->setText("m");
+
+            ui->aButton->setSupplementaryCharacters({"á", "â", "ä", "à", "ã"});
         }
 
         QSoundEffect* keySound = new QSoundEffect();
@@ -149,6 +153,7 @@ void LayoutUS::buttonIterate(QWidget* wid) {
     for (QObject* widget : wid->children()) {
         if (qobject_cast<KeyButton*>(widget) != nullptr) {
             connect(qobject_cast<KeyButton*>(widget), SIGNAL(tapped()), this, SLOT(pressKey()));
+            connect(qobject_cast<KeyButton*>(widget), &KeyButton::typeSupplementary, this, &LayoutUS::typeString);
         } else if (qobject_cast<QPushButton*>(widget) != nullptr) {
             connect(qobject_cast<QPushButton*>(widget), SIGNAL(clicked(bool)), this, SLOT(pressKey()));
         } else if (qobject_cast<QWidget*>(widget) != nullptr) {
@@ -197,30 +202,7 @@ void LayoutUS::pressKey() {
     } else if (button == ui->returnButton) {
         pressedKey = XK_Return;
     } else {
-        //Register keycode with desired character
-        //int kc = findEmptyKeycode();
-        QString keycode = button->text().toUtf8().toHex();
-        if (button->text() == "&&") keycode = QString("&").toUtf8().toHex();
-
-        if (keycode.length() == 1) {
-            keycode.prepend("000");
-        } else if (keycode.length() == 2) {
-            keycode.prepend("00");
-        } else if (keycode.length() == 3) {
-            keycode.prepend("0");
-        }
-
-        keycode.prepend("U");
-        pressedKey = XStringToKeysym(keycode.toLocal8Bit().constData());
-
-        emit pushLetter(button->text());
-
-        /*KeySym ksList[] = {
-            pressedKey
-        };
-        qDebug() << XChangeKeyboardMapping(QX11Info::display(), kc, 1, ksList, 1);
-        pressedKeyCode = kc;
-        useKeySym = true;*/
+        this->typeString(button->text());
     }
 
     emit typeKey(pressedKey);

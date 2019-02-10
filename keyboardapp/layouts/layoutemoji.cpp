@@ -4,9 +4,12 @@
 #include <QFile>
 #include <QGridLayout>
 #include <QScroller>
+#include <QFontDatabase>
 #include "keybutton.h"
 
 #include <the-libs_global.h>
+
+#include <X11/keysym.h>
 
 struct Emoji {
     QString emoji;
@@ -24,6 +27,8 @@ struct EmojiGroup {
 struct LayoutEmojiPrivate {
     QList<EmojiGroup> emojiGroups;
     QList<KeyButton*> currentButtons;
+
+    QFont fnt;
 };
 
 LayoutEmoji::LayoutEmoji(QWidget *parent) :
@@ -35,6 +40,20 @@ LayoutEmoji::LayoutEmoji(QWidget *parent) :
     d = new LayoutEmojiPrivate();
 
     ui->categoriesList->setFixedWidth(ui->categoriesList->width() * theLibsGlobal::getDPIScaling());
+
+    //Decide on a font
+    QString fontFamily;
+    QFontDatabase fontDb;
+    if (fontDb.hasFamily("Noto Color Emoji")) {
+        fontFamily = "Noto Color Emoji";
+    }
+
+    if (fontFamily == "") {
+        //Warn about emoji support
+    } else {
+        d->fnt.setFamily(fontFamily);
+        d->fnt.setPointSize(20);
+    }
 
     QFile emojiOrdering(":/data/emoji-test.txt");
     emojiOrdering.open(QFile::ReadOnly);
@@ -92,7 +111,9 @@ LayoutEmoji::LayoutEmoji(QWidget *parent) :
             currentGroup.emoji.append(e);
         }
     }
+    d->emojiGroups.append(currentGroup);
 
+    ui->categoriesList->setFont(d->fnt);
     for (int i = 0; i < d->emojiGroups.count(); i++) {
         EmojiGroup g = d->emojiGroups.at(i);
         //if (g.name == "Component") continue;
@@ -132,18 +153,17 @@ void LayoutEmoji::on_categoriesList_currentRowChanged(int currentRow)
     int row = 0, col = 0;
     EmojiGroup g = d->emojiGroups.at(currentRow);
     for (struct Emoji e : g.emoji) {
+        if (e.qualification != "fully-qualified") continue;
+
         KeyButton* b = new KeyButton();
         b->setText(e.emoji);
         b->setFlat(true);
         b->setFixedWidth(ui->emojiSelectionArea->width() / 10);
         b->setFixedHeight(50 * theLibsGlobal::getDPIScaling());
+        b->setFont(d->fnt);
         connect(b, &KeyButton::tapped, b, [=] {
             emit typeLetter(b->text());
         });
-
-        QFont fnt = b->font();
-        fnt.setPointSize(20);
-        b->setFont(fnt);
 
         layout->addWidget(b, row, col);
         d->currentButtons.append(b);
@@ -154,4 +174,14 @@ void LayoutEmoji::on_categoriesList_currentRowChanged(int currentRow)
             row++;
         }
     }
+}
+
+void LayoutEmoji::on_backspace_tapped()
+{
+    emit typeKey(XK_BackSpace);
+}
+
+void LayoutEmoji::on_returnButton_tapped()
+{
+    emit typeKey(XK_Return);
 }

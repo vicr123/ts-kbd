@@ -86,11 +86,86 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>427</width>
+          <width>346</width>
           <height>195</height>
          </rect>
         </property>
        </widget>
+      </widget>
+     </item>
+     <item>
+      <widget class="Line" name="line_4">
+       <property name="maximumSize">
+        <size>
+         <width>1</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QWidget" name="widget" native="true">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="KeyButton" name="backspace">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset theme="go-previous">
+            <normaloff>../</normaloff>../</iconset>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="ReturnKey" name="returnButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>15</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>⏎</string>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
     </layout>
@@ -110,6 +185,27 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KeyButton</class>
+   <extends>QPushButton</extends>
+   <header>keybutton.h</header>
+   <slots>
+    <signal>held(QPoint)</signal>
+    <signal>touchMoved(QPoint)</signal>
+    <signal>letGo(QPoint)</signal>
+    <signal>tapped()</signal>
+   </slots>
+  </customwidget>
+  <customwidget>
+   <class>ReturnKey</class>
+   <extends>QPushButton</extends>
+   <header>specialKeys/returnkey.h</header>
+   <slots>
+    <signal>tapped()</signal>
+   </slots>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

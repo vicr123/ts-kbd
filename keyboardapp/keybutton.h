@@ -4,22 +4,29 @@
 #include <QPushButton>
 #include <QTouchEvent>
 
+struct KeyButtonPrivate;
+
 class KeyButton : public QPushButton
 {
     Q_OBJECT
-public:
-    explicit KeyButton(QWidget* parent = nullptr);
+    public:
+        explicit KeyButton(QWidget* parent = nullptr);
+        ~KeyButton();
 
-signals:
-    void tapped();
-    void held(QPoint heldPoint);
-    void letGo(QPoint letGoPoint);
-    void touchMoved(QPoint pos);
+    signals:
+        void tapped();
+        void typeSupplementary(QString supplementary);
+        void held(QPoint heldPoint);
+        void letGo(QPoint letGoPoint);
+        void touchMoved(QPoint pos);
 
-public slots:
+    public slots:
+        void setSupplementaryCharacters(QStringList characters);
 
-private:
-    bool event(QEvent* event);
+    private:
+        KeyButtonPrivate* d;
+
+        bool event(QEvent* event);
 };
 
 #endif // KEYBUTTON_H

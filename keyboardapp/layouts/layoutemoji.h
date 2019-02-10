@@ -22,6 +22,10 @@ class LayoutEmoji : public Layout
     private slots:
         void on_categoriesList_currentRowChanged(int currentRow);
 
+        void on_backspace_tapped();
+
+        void on_returnButton_tapped();
+
     private:
         Ui::LayoutEmoji *ui;
 
