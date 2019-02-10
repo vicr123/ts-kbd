@@ -31,6 +31,8 @@ private:
     void resizeEvent(QResizeEvent* event);
     bool event(QEvent* event);
 
+    void updateSupplementaryCharacters();
+
     QDateTime capsLockPressedTime = QDateTime::currentDateTime();
     QSettings settings;
 

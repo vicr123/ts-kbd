@@ -1,6 +1,7 @@
 #include "supplementarykeypopup.h"
 #include "ui_supplementarykeypopup.h"
 
+#include <QScreen>
 #include <keybutton.h>
 
 #include <QX11Info>
@@ -54,9 +55,14 @@ void SupplementaryKeyPopup::setPrimaryKeyTopLeft(QPoint topLeft) {
 void SupplementaryKeyPopup::show() {
     this->setFixedSize(this->sizeHint());
 
-    QRect newGeometry;
-    newGeometry.setSize(this->size());
-    newGeometry.setTopLeft(d->topLeft - QPoint(10, 10));
+    QRect newGeometry(d->topLeft - QPoint(10, 10), this->size());
+
+    QRect screenGeometry = QApplication::screenAt(d->topLeft)->geometry();
+    if (newGeometry.right() > screenGeometry.right()) {
+        //Reverse everything
+        this->setLayoutDirection(Qt::RightToLeft);
+        newGeometry.moveTopRight(d->topLeft + QPoint(10 + d->buttonSize.width(), -10));
+    }
 
     QWidget::show();
 

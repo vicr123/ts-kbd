@@ -19,17 +19,19 @@ KeyButton::KeyButton(QWidget* parent) : QPushButton(parent)
     d->supplementaryPopupTimer->setInterval(300);
     d->supplementaryPopupTimer->setSingleShot(true);
     connect(d->supplementaryPopupTimer, &QTimer::timeout, this, [=] {
-        //Show the supplementary popup dialog
-        d->keyPopup->setFont(this->parentWidget()->font());
-        d->keyPopup->setButtonSize(this->size());
-        d->keyPopup->setPrimaryKeyTopLeft(this->mapToGlobal(QPoint(0, 0)));
+        //Show the supplementary popup dialog if needed
+        if (!d->supplementaryCharacters.isEmpty()) {
+            d->keyPopup->setFont(this->parentWidget()->font());
+            d->keyPopup->setButtonSize(this->size());
+            d->keyPopup->setPrimaryKeyTopLeft(this->mapToGlobal(QPoint(0, 0)));
 
-        QStringList buttons;
-        buttons.append(this->text());
-        buttons.append(d->supplementaryCharacters);
-        d->keyPopup->setButtons(buttons);
+            QStringList buttons;
+            buttons.append(this->text());
+            buttons.append(d->supplementaryCharacters);
+            d->keyPopup->setButtons(buttons);
 
-        d->keyPopup->show();
+            d->keyPopup->show();
+        }
     });
 }
 

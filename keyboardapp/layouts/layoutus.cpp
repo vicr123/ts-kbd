@@ -50,8 +50,6 @@ LayoutUS::LayoutUS(QWidget *parent) :
             ui->bButton->setText("B");
             ui->nButton->setText("N");
             ui->mButton->setText("M");
-
-            ui->aButton->setSupplementaryCharacters({"Á", "Â", "Ä", "À", "Ã"});
         } else {
             ui->qButton->setText("q");
             ui->wButton->setText("w");
@@ -81,9 +79,9 @@ LayoutUS::LayoutUS(QWidget *parent) :
             ui->bButton->setText("b");
             ui->nButton->setText("n");
             ui->mButton->setText("m");
-
-            ui->aButton->setSupplementaryCharacters({"á", "â", "ä", "à", "ã"});
         }
+
+        updateSupplementaryCharacters();
 
         QSoundEffect* keySound = new QSoundEffect();
         keySound->setSource(QUrl("qrc:/sounds/keyclickErase.wav"));
@@ -147,6 +145,26 @@ LayoutUS::~LayoutUS()
 
 Layout::Layouts LayoutUS::layoutType() {
     return enUS;
+}
+
+void LayoutUS::updateSupplementaryCharacters() {
+    if (ui->shift->isChecked()) {
+        ui->aButton->setSupplementaryCharacters({"Á", "Â", "Ä", "À", "Ã"});
+        ui->eButton->setSupplementaryCharacters({"É", "Ê", "Ë", "È"});
+        ui->iButton->setSupplementaryCharacters({"Í", "Î", "Ï", "Ì"});
+        ui->oButton->setSupplementaryCharacters({"Ó", "Ô", "Ö", "Ò", "Õ"});
+        ui->uButton->setSupplementaryCharacters({"Ú", "Û", "Ü", "Ù"});
+        ui->yButton->setSupplementaryCharacters({"Ý"});
+        ui->cButton->setSupplementaryCharacters({"Ç"});
+    } else {
+        ui->aButton->setSupplementaryCharacters({"á", "â", "ä", "à", "ã"});
+        ui->eButton->setSupplementaryCharacters({"é", "ê", "ë", "è"});
+        ui->iButton->setSupplementaryCharacters({"í", "î", "ï", "ì"});
+        ui->oButton->setSupplementaryCharacters({"ó", "ô", "ö", "ò", "õ"});
+        ui->uButton->setSupplementaryCharacters({"ú", "û", "ü", "ù"});
+        ui->yButton->setSupplementaryCharacters({"ý"});
+        ui->cButton->setSupplementaryCharacters({"ç"});
+    }
 }
 
 void LayoutUS::buttonIterate(QWidget* wid) {
