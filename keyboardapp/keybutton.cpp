@@ -5,9 +5,11 @@
 #include "supplementarykeypopup.h"
 
 struct KeyButtonPrivate {
-    QList<QString> supplementaryCharacters;
+    QStringList supplementaryCharacters;
     SupplementaryKeyPopup* keyPopup = nullptr;
     QTimer* supplementaryPopupTimer;
+
+    QPoint oldTopLeft;
 };
 
 KeyButton::KeyButton(QWidget* parent) : QPushButton(parent)
@@ -20,7 +22,7 @@ KeyButton::KeyButton(QWidget* parent) : QPushButton(parent)
     d->supplementaryPopupTimer->setSingleShot(true);
     connect(d->supplementaryPopupTimer, &QTimer::timeout, this, [=] {
         //Show the supplementary popup dialog if needed
-        if (!d->supplementaryCharacters.isEmpty()) {
+        if (!d->supplementaryCharacters.isEmpty() && d->oldTopLeft == this->mapToGlobal(QPoint(0, 0))) {
             d->keyPopup->setFont(this->parentWidget()->font());
             d->keyPopup->setButtonSize(this->size());
             d->keyPopup->setPrimaryKeyTopLeft(this->mapToGlobal(QPoint(0, 0)));
@@ -44,6 +46,8 @@ bool KeyButton::event(QEvent* event) {
         QTouchEvent* e = (QTouchEvent*) event;
         e->accept();
 
+        d->oldTopLeft = this->mapToGlobal(QPoint(0, 0));
+
         this->setDown(true);
         emit held(e->touchPoints().first().pos().toPoint());
 
@@ -58,7 +62,7 @@ bool KeyButton::event(QEvent* event) {
         emit letGo(e->touchPoints().first().pos().toPoint());
 
         if (d->keyPopup->isVisible()) {
-            QString key = d->keyPopup->buttonForScreenPoint(e->touchPoints().first().screenPos().toPoint());
+            QString key = d->keyPopup->buttonForScreenPoint(this->mapToGlobal(e->touchPoints().first().pos().toPoint()));
             if (key != "") {
                 emit typeSupplementary(key);
             }

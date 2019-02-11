@@ -37,10 +37,7 @@
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QHBoxLayout" name="keysLayout">
-      <property name="spacing">
-       <number>0</number>
-      </property>
+     <layout class="QGridLayout" name="keysLayout">
       <property name="leftMargin">
        <number>9</number>
       </property>
@@ -52,6 +49,9 @@
       </property>
       <property name="bottomMargin">
        <number>9</number>
+      </property>
+      <property name="spacing">
+       <number>0</number>
       </property>
      </layout>
     </widget>

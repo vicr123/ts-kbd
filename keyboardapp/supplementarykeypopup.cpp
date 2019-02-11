@@ -37,14 +37,21 @@ void SupplementaryKeyPopup::setButtonSize(QSize size) {
 }
 
 void SupplementaryKeyPopup::setButtons(QStringList buttons) {
+    int col = 0, row = 0;
     for (QString b : buttons) {
         KeyButton* k = new KeyButton();
         k->setText(b);
         k->setFlat(true);
         k->setFixedSize(d->buttonSize);
         k->setFont(this->font());
-        ui->keysLayout->addWidget(k);
+        ui->keysLayout->addWidget(k, row, col);
         d->buttons.append(k);
+
+        col++;
+        if (col > 5) {
+            col = 0;
+            row++;
+        }
     }
 }
 
@@ -58,11 +65,24 @@ void SupplementaryKeyPopup::show() {
     QRect newGeometry(d->topLeft - QPoint(10, 10), this->size());
 
     QRect screenGeometry = QApplication::screenAt(d->topLeft)->geometry();
+    Qt::Corner finalCorner = Qt::TopLeftCorner;
     if (newGeometry.right() > screenGeometry.right()) {
         //Reverse everything
-        this->setLayoutDirection(Qt::RightToLeft);
+        finalCorner = Qt::TopRightCorner;
         newGeometry.moveTopRight(d->topLeft + QPoint(10 + d->buttonSize.width(), -10));
     }
+
+    if (newGeometry.bottom() > screenGeometry.bottom()) {
+        //Reverse everything
+        if (finalCorner == Qt::TopLeftCorner) {
+            finalCorner = Qt::BottomLeftCorner;
+        } else {
+            finalCorner = Qt::BottomRightCorner;
+        }
+
+        newGeometry.moveTop(newGeometry.top() - (d->buttons.count() / 6) * d->buttonSize.height());
+    }
+    ui->keysLayout->setOriginCorner(finalCorner);
 
     QWidget::show();
 

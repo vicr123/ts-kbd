@@ -5,6 +5,8 @@
 #include <QGridLayout>
 #include <QScroller>
 #include <QFontDatabase>
+#include <QSoundEffect>
+#include <QSharedPointer>
 #include "keybutton.h"
 
 #include <the-libs_global.h>
@@ -13,7 +15,7 @@
 
 struct Emoji {
     QString emoji;
-    QList<Emoji> supplementalEmoji;
+    QList<QSharedPointer<Emoji>> supplementalEmoji;
     QString qualification;
 
     QString name;
@@ -21,7 +23,7 @@ struct Emoji {
 
 struct EmojiGroup {
     QString name;
-    QList<Emoji> emoji;
+    QList<QSharedPointer<Emoji>> emoji;
 };
 
 struct LayoutEmojiPrivate {
@@ -55,9 +57,12 @@ LayoutEmoji::LayoutEmoji(QWidget *parent) :
         d->fnt.setPointSize(20);
     }
 
+    ui->emojiSelectionWidget->setFont(d->fnt);
+
     QFile emojiOrdering(":/data/emoji-test.txt");
     emojiOrdering.open(QFile::ReadOnly);
 
+    QSharedPointer<struct Emoji> lastBaseEmoji;
     EmojiGroup currentGroup;
     while (!emojiOrdering.atEnd()) {
         QString line = emojiOrdering.readLine().trimmed();
@@ -78,7 +83,7 @@ LayoutEmoji::LayoutEmoji(QWidget *parent) :
             //Emoji line
             QStringList parts = line.split(" ", QString::SkipEmptyParts);
 
-            struct Emoji e;
+            QSharedPointer<struct Emoji> e(new struct Emoji());
             int state = 0;
             for (QString part : parts) {
                 if (state == 0) {
@@ -91,9 +96,9 @@ LayoutEmoji::LayoutEmoji(QWidget *parent) :
                             QChar raws[2];
                             raws[0] = QChar::highSurrogate(codepoint);
                             raws[1] = QChar::lowSurrogate(codepoint);
-                            e.emoji.append(QString(raws, 2));
+                            e->emoji.append(QString(raws, 2));
                         } else {
-                            e.emoji.append(QChar(codepoint));
+                            e->emoji.append(QChar(codepoint));
                         }
                     }
                 } else if (state == 1) {
@@ -101,14 +106,33 @@ LayoutEmoji::LayoutEmoji(QWidget *parent) :
                     if (part == "#") {
                         state++;
                     } else {
-                        e.qualification = part;
+                        e->qualification = part;
                     }
+                } else if (state == 2) {
+                    //Ignore the first part of the comment
+                    state++;
                 } else {
-                    e.name.append(part + " ");
+                    e->name.append(part + " ");
+                }
+            }
+            e->name = e->name.trimmed();
+
+            bool add = true;
+            if (!lastBaseEmoji.isNull() && e->qualification == "fully-qualified") {
+                QRegularExpression exp(QString("%1: (light|medium(-(light|dark))?|dark) skin tone").arg(lastBaseEmoji->name));
+                QRegularExpressionMatch match = exp.match(e->name);
+                if (match.hasMatch()) {
+                    lastBaseEmoji->supplementalEmoji.append(e);
+                    add = false;
                 }
             }
 
-            currentGroup.emoji.append(e);
+            if (add) {
+                if (e->qualification == "fully-qualified") {
+                    lastBaseEmoji = e;
+                }
+                currentGroup.emoji.append(e);
+            }
         }
     }
     d->emojiGroups.append(currentGroup);
@@ -118,7 +142,7 @@ LayoutEmoji::LayoutEmoji(QWidget *parent) :
         EmojiGroup g = d->emojiGroups.at(i);
         //if (g.name == "Component") continue;
         QListWidgetItem* category = new QListWidgetItem();
-        category->setText(g.emoji.first().emoji);
+        category->setText(g.emoji.first()->emoji);
         category->setData(Qt::UserRole, i);
         ui->categoriesList->addItem(category);
     }
@@ -152,19 +176,40 @@ void LayoutEmoji::on_categoriesList_currentRowChanged(int currentRow)
 
     int row = 0, col = 0;
     EmojiGroup g = d->emojiGroups.at(currentRow);
-    for (struct Emoji e : g.emoji) {
-        if (e.qualification != "fully-qualified") continue;
+    for (QSharedPointer<struct Emoji> e : g.emoji) {
+        if (e->qualification != "fully-qualified") continue;
 
         KeyButton* b = new KeyButton();
-        b->setText(e.emoji);
+        b->setText(e->emoji);
         b->setFlat(true);
         b->setFixedWidth(ui->emojiSelectionArea->width() / 10);
         b->setFixedHeight(50 * theLibsGlobal::getDPIScaling());
         b->setFont(d->fnt);
+
+        QStringList supplementaryCharacters;
+        for (QSharedPointer<struct Emoji> supplementary : e->supplementalEmoji) {
+            supplementaryCharacters.append(supplementary->emoji);
+        }
+        b->setSupplementaryCharacters(supplementaryCharacters);
+
         connect(b, &KeyButton::tapped, b, [=] {
             emit typeLetter(b->text());
+
+            QSoundEffect* keySound = new QSoundEffect();
+            keySound->setSource(QUrl("qrc:/sounds/keyclick.wav"));
+            keySound->play();
+            connect(keySound, SIGNAL(playingChanged()), keySound, SLOT(deleteLater()));
         });
 
+        connect(b, &KeyButton::typeSupplementary, [=](QString supplementary) {
+            emit typeLetter(supplementary);
+
+            QSoundEffect* keySound = new QSoundEffect();
+            keySound->setSource(QUrl("qrc:/sounds/keyclick.wav"));
+            keySound->play();
+            connect(keySound, SIGNAL(playingChanged()), keySound, SLOT(deleteLater()));
+
+        });
         layout->addWidget(b, row, col);
         d->currentButtons.append(b);
 

@@ -643,30 +643,7 @@ void KeyboardWindow::on_suggestionBar_wordSelected(const QString &word, int char
         pressKeySym(XK_BackSpace);
     }
 
-    for (QChar c : word) {
-        QString str(c);
-
-        QString keycode = str.toUtf8().toHex();
-
-        if (keycode.length() == 1) {
-            keycode.prepend("000");
-        } else if (keycode.length() == 2) {
-            keycode.prepend("00");
-        } else if (keycode.length() == 3) {
-            keycode.prepend("0");
-        }
-
-        keycode.prepend("U");
-
-        bool oldShiftState = state->shift();
-        if (c.isUpper()) {
-            state->setShift(true);
-        }
-        pressKeySym(XStringToKeysym(keycode.toLocal8Bit().constData()));
-        if (c.isUpper()) {
-            state->setShift(oldShiftState);
-        }
-    }
+    pressLetter(word);
 }
 
 void KeyboardWindow::changeGeometry() {
