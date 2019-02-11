@@ -1,14 +1,14 @@
 #ifndef SUPPLEMENTARYKEYPOPUP_H
 #define SUPPLEMENTARYKEYPOPUP_H
 
-#include <QWidget>
+#include <QDialog>
 
 namespace Ui {
     class SupplementaryKeyPopup;
 }
 
 struct SupplementaryKeyPopupPrivate;
-class SupplementaryKeyPopup : public QWidget
+class SupplementaryKeyPopup : public QDialog
 {
         Q_OBJECT
 

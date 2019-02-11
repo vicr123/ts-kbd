@@ -2,6 +2,7 @@
 #include "ui_supplementarykeypopup.h"
 
 #include <QScreen>
+#include <tpropertyanimation.h>
 #include <keybutton.h>
 
 #include <QX11Info>
@@ -15,7 +16,7 @@ struct SupplementaryKeyPopupPrivate {
 };
 
 SupplementaryKeyPopup::SupplementaryKeyPopup(QWidget *parent) :
-    QWidget(parent),
+    QDialog(parent),
     ui(new Ui::SupplementaryKeyPopup)
 {
     ui->setupUi(this);
@@ -84,7 +85,8 @@ void SupplementaryKeyPopup::show() {
     }
     ui->keysLayout->setOriginCorner(finalCorner);
 
-    QWidget::show();
+    //this->setWindowOpacity(0);
+    QDialog::show();
 
     Atom DesktopWindowTypeAtom;
     DesktopWindowTypeAtom = XInternAtom(QX11Info::display(), "_NET_WM_WINDOW_TYPE_DOCK", False);
@@ -93,6 +95,26 @@ void SupplementaryKeyPopup::show() {
 
     this->setGeometry(newGeometry);
     this->raise();
+
+    /*tPropertyAnimation* opacity = new tPropertyAnimation(this, "windowOpacity");
+    opacity->setStartValue(0.0);
+    opacity->setEndValue(1.0);
+    opacity->setEasingCurve(QEasingCurve::OutCubic);
+    opacity->setDuration(500);
+    connect(opacity, &tPropertyAnimation::finished, opacity, &tPropertyAnimation::deleteLater);
+    opacity->start();*/
+
+    tVariantAnimation* clipper = new tVariantAnimation();
+    clipper->setStartValue(d->buttons.first()->geometry());
+    clipper->setEndValue(QRect(0, 0, this->width(), this->height()));
+    clipper->setEasingCurve(QEasingCurve::OutCubic);
+    clipper->setDuration(500);
+    connect(clipper, &tVariantAnimation::valueChanged, [=](QVariant value) {
+        QRegion mask(value.toRect());
+        this->setMask(mask);
+    });
+    connect(clipper, &tVariantAnimation::finished, clipper, &tVariantAnimation::deleteLater);
+    clipper->start();
 }
 
 QString SupplementaryKeyPopup::buttonForScreenPoint(QPoint point) {
