@@ -80,7 +80,7 @@ void SupplementaryKeyPopup::show() {
             finalCorner = Qt::BottomRightCorner;
         }
 
-        newGeometry.moveTop(newGeometry.top() - (d->buttons.count() / 6) * d->buttonSize.height());
+        newGeometry.moveTop(newGeometry.top() - ((d->buttons.count() - 1) / 6) * d->buttonSize.height());
     }
     ui->keysLayout->setOriginCorner(finalCorner);
 

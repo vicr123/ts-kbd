@@ -117,17 +117,41 @@ LayoutEmoji::LayoutEmoji(QWidget *parent) :
             }
             e->name = e->name.trimmed();
 
-            bool add = true;
+            bool isSupplemental = false;
             if (!lastBaseEmoji.isNull() && e->qualification == "fully-qualified") {
-                QRegularExpression exp(QString("%1: (light|medium(-(light|dark))?|dark) skin tone").arg(lastBaseEmoji->name));
-                QRegularExpressionMatch match = exp.match(e->name);
-                if (match.hasMatch()) {
-                    lastBaseEmoji->supplementalEmoji.append(e);
-                    add = false;
+                //QRegularExpression exp(QString("%1: (light|medium(-(light|dark))?|dark) skin tone").arg(lastBaseEmoji->name));
+                //QRegularExpressionMatch match = exp.match(e->name);
+                //if (match.hasMatch()) {
+
+                if (e->name.startsWith(lastBaseEmoji->name + ":")) {
+                    isSupplemental = true;
+                }
+                if (lastBaseEmoji->name.contains("person") || lastBaseEmoji->name.contains("people")) {
+                    if (e->name.contains("man") && (e->name.startsWith(QString(lastBaseEmoji->name).replace("person", "man") + ":") || e->name == QString(lastBaseEmoji->name).replace("person", "man"))) {
+                        isSupplemental = true;
+                    }
+                    if (e->name.contains("woman") && (e->name.startsWith(QString(lastBaseEmoji->name).replace("person", "woman") + ":") || e->name == QString(lastBaseEmoji->name).replace("person", "woman"))) {
+                        isSupplemental = true;
+                    }
+                    if (e->name.contains("men") && (e->name.startsWith(QString(lastBaseEmoji->name).replace("people", "men") + ":") || e->name == QString(lastBaseEmoji->name).replace("people", "men"))) {
+                        isSupplemental = true;
+                    }
+                    if (e->name.contains("women") && (e->name.startsWith(QString(lastBaseEmoji->name).replace("people", "women") + ":") || e->name == QString(lastBaseEmoji->name).replace("people", "women"))) {
+                        isSupplemental = true;
+                    }
+                } else if (lastBaseEmoji->name.contains("man") || lastBaseEmoji->name.contains("men")) {
+                    if (e->name.contains("woman") && (e->name.startsWith(QString(lastBaseEmoji->name).replace("man", "woman") + ":") || e->name == QString(lastBaseEmoji->name).replace("man", "woman"))) {
+                        isSupplemental = true;
+                    }
+                    if (e->name.contains("women") && (e->name.startsWith(QString(lastBaseEmoji->name).replace("men", "women") + ":") || e->name == QString(lastBaseEmoji->name).replace("men", "women"))) {
+                        isSupplemental = true;
+                    }
                 }
             }
 
-            if (add) {
+            if (isSupplemental) {
+                lastBaseEmoji->supplementalEmoji.append(e);
+            } else {
                 if (e->qualification == "fully-qualified") {
                     lastBaseEmoji = e;
                 }
