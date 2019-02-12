@@ -30,7 +30,7 @@ public slots:
     void acceptAutocorrection();
 
     void updateSuggestions();
-    void setupDictionary();
+    void changeDictionary(QString dictionaryName);
 
 signals:
     void wordSelected(QString word, int charactersToBackspace);

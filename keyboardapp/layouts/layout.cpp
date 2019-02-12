@@ -27,7 +27,7 @@ void Layout::typeString(QString str) {
     pressedKey = XStringToKeysym(keycode.toLocal8Bit().constData());
 
     emit pushLetter(str);
-    if (XKeysymToKeycode(QX11Info::display(), pressedKey) == 0) {
+    if (XKeysymToKeycode(QX11Info::display(), pressedKey) == 0 || pressedKey == NoSymbol) {
         //No keycode exists on this keyboard for this character
         //Use copy+paste hack
         emit typeLetter(str);

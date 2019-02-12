@@ -25,7 +25,17 @@ private slots:
 
     void on_dictionaryComboBox_currentTextChanged(const QString &arg1);
 
-private:
+    void on_addLanguageButton_clicked();
+
+    void on_addLanguageCancelButton_clicked();
+
+    void saveLanguages();
+
+    void on_newLanguageAddButton_clicked();
+
+    void on_removeLanguageButton_clicked();
+
+    private:
     Ui::Settings *ui;
 
     QSettings settings;

@@ -46,7 +46,9 @@ SOURCES += main.cpp\
     specialKeys/returnkey.cpp \
     layouts/layout.cpp \
     layouts/layoutemoji.cpp \
-    supplementarykeypopup.cpp
+    supplementarykeypopup.cpp \
+    layouts/layoutvi.cpp \
+    layouts/layoutur.cpp
 
 HEADERS  += \
     keyboardwindow.h \
@@ -61,7 +63,9 @@ HEADERS  += \
     specialKeys/returnkey.h \
     layouts/layout.h \
     layouts/layoutemoji.h \
-    supplementarykeypopup.h
+    supplementarykeypopup.h \
+    layouts/layoutvi.h \
+    layouts/layoutur.h
 
 FORMS    += \
     keyboardwindow.ui \
@@ -71,7 +75,8 @@ FORMS    += \
     suggestionbar.ui \
     layouts/layoutnumeric.ui \
     layouts/layoutemoji.ui \
-    supplementarykeypopup.ui
+    supplementarykeypopup.ui \
+    layouts/layoutur.ui
 
 RESOURCES += \
     resources.qrc

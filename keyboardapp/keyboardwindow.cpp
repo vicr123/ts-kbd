@@ -6,9 +6,13 @@
 #include <QPainter>
 #include <QClipboard>
 #include <QMimeData>
+#include <QMetaEnum>
+#include <QMenu>
 #include "keyboardstate.h"
 
 #include "layouts/layoutus.h"
+#include "layouts/layoutvi.h"
+#include "layouts/layoutur.h"
 #include "layouts/layoutsym.h"
 #include "layouts/layoutnumeric.h"
 #include "layouts/layoutemoji.h"
@@ -64,12 +68,16 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
 
 
     LayoutUS* usLayout = new LayoutUS();
+    LayoutVI* viLayout = new LayoutVI();
+    LayoutUR* urLayout = new LayoutUR();
     LayoutSym* symLayout = new LayoutSym();
     LayoutNumeric* numLayout = new LayoutNumeric();
     LayoutEmoji* emojiLayout = new LayoutEmoji();
 
     Layout* layouts[] = {
         usLayout,
+        viLayout,
+        urLayout,
         symLayout,
         numLayout,
         emojiLayout
@@ -82,6 +90,8 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
         connect(layout, SIGNAL(pushLetter(QString)), ui->suggestionBar, SLOT(pushLetter(QString)));
         this->layouts.insert(layout->layoutType(), layout);
     }
+
+    changeToDefaultKeyboard();
 
     if (state->split()) {
         ui->spaceButton->sizePolicy().setHorizontalStretch(10);
@@ -692,7 +702,7 @@ void KeyboardWindow::setKeyboardType(QString type) {
 
     ui->urlSlashButton->setVisible(false);
     if (type == "normal") {
-        changeKeyboard(Layout::enUS);
+        changeToDefaultKeyboard();
         ui->suggestionBar->setVisible(true);
     } else if (type == "numeric") {
         changeKeyboard(Layout::Numeric);
@@ -706,22 +716,39 @@ void KeyboardWindow::setKeyboardType(QString type) {
     //changeGeometry();
 }
 
+void KeyboardWindow::changeToDefaultKeyboard() {
+    int currentKeyboardIndex = settings.value("layouts/current", 0).toInt();
+    settings.beginReadArray("layouts/languages");
+    settings.setArrayIndex(currentKeyboardIndex);
+
+    ui->spaceButton->setText(settings.value("name", tr("Keyboard")).toString());
+    ui->suggestionBar->changeDictionary(settings.value("dictionary").toString());
+
+    Layout::Layouts selectedLayout;
+    QMetaEnum layoutsEnum = QMetaEnum::fromType<Layout::Layouts>();
+    bool ok;
+    selectedLayout = (Layout::Layouts) layoutsEnum.keyToValue(settings.value("layout", "enUS").toString().toLocal8Bit().data(), &ok);
+    if (!ok) {
+        selectedLayout = Layout::enUS;
+    }
+    changeKeyboard(selectedLayout);
+
+    settings.endArray();
+}
+
 void KeyboardWindow::changeKeyboard(Layout::Layouts layout) {
     currentKeyboardLayout = layout;
     ui->keyboardsStack->setCurrentWidget(layouts.value(layout));
 
     switch (layout) {
-        case Layout::enUS:
-            ui->spaceButton->setText("ENGLISH (US)");
-            break;
         case Layout::Symbol:
-            ui->spaceButton->setText("SYMBOLS");
+            ui->spaceButton->setText(tr("Symbols"));
             break;
         case Layout::Numeric:
-            ui->spaceButton->setText("NUMERIC");
+            ui->spaceButton->setText(tr("Numeric", "Numeric Keyboard"));
             break;
         case Layout::Emoji:
-            ui->spaceButton->setText("EMOJI");
+            ui->spaceButton->setText(tr("Emoji"));
             break;
     }
 }
@@ -742,4 +769,29 @@ void KeyboardWindow::on_emojiButton_clicked()
     keySound->setSource(QUrl("qrc:/sounds/keyclickErase.wav"));
     keySound->play();
     connect(keySound, SIGNAL(playingChanged()), keySound, SLOT(deleteLater()));
+}
+
+void KeyboardWindow::on_languageButton_pressed()
+{
+    QMenu* menu = new QMenu();
+    menu->addSection(tr("Keyboard Language"));
+    int count = settings.beginReadArray("layouts/languages");
+    for (int i = 0; i < count; i++) {
+        settings.setArrayIndex(i);
+        menu->addAction(settings.value("name").toString(), [=] {
+            settings.setValue("layouts/current", i);
+            changeToDefaultKeyboard();
+        });
+    }
+    settings.endArray();
+
+    menu->addSection(tr("theShell Keyboard"));
+    menu->addAction(QIcon::fromTheme("configure"), tr("Settings"), [=] {
+        ui->settingsButton->click();
+    });
+    menu->addAction(QIcon::fromTheme("application-exit"), tr("Exit"), [=] {
+        QApplication::exit();
+    });
+
+    ui->languageButton->setMenu(menu);
 }

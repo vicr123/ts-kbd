@@ -12,9 +12,6 @@ SuggestionBar::SuggestionBar(QWidget *parent) :
     ui(new Ui::SuggestionBar)
 {
     ui->setupUi(this);
-
-    connect(state, SIGNAL(dictionariesChanged()), this, SLOT(setupDictionary()));
-    setupDictionary();
 }
 
 SuggestionBar::~SuggestionBar()
@@ -22,8 +19,8 @@ SuggestionBar::~SuggestionBar()
     delete ui;
 }
 
-void SuggestionBar::setupDictionary() {
-    QString dictionaryBase = "/usr/share/hunspell/" + settings.value("autocorrect/dictionary").toString();
+void SuggestionBar::changeDictionary(QString dictionaryName) {
+    QString dictionaryBase = "/usr/share/hunspell/" + dictionaryName;
     dictionary = new Hunspell((dictionaryBase + ".aff").toLocal8Bit().data(), (dictionaryBase + ".dic").toLocal8Bit().data());
     QScroller::grabGesture(ui->suggestedArea->viewport(), QScroller::LeftMouseButtonGesture);
 

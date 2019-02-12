@@ -62,7 +62,7 @@ bool KeyButton::event(QEvent* event) {
         emit letGo(e->touchPoints().first().pos().toPoint());
 
         if (d->keyPopup->isVisible()) {
-            QString key = d->keyPopup->buttonForScreenPoint(this->mapToGlobal(e->touchPoints().first().pos().toPoint()));
+            QString key = d->keyPopup->buttonForScreenPoint(this->mapToGlobal(e->touchPoints().first().pos().toPoint())).remove("◌");
             if (key != "") {
                 emit typeSupplementary(key);
             }

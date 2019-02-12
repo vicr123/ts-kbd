@@ -10,11 +10,16 @@ class Layout : public QWidget
         explicit Layout(QWidget *parent = nullptr);
 
         enum Layouts {
-            enUS,
+            enUS = 0,
+            viVN,
+            urPK,
+
+            LastSelection,
             Symbol,
             Numeric,
             Emoji
         };
+        Q_ENUM(Layouts)
 
         virtual Layouts layoutType() = 0;
 

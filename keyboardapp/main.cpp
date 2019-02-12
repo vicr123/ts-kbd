@@ -20,7 +20,12 @@ int main(int argc, char *argv[])
     a.setApplicationName("ts-kbd");
 
     QSettings settings;
-    if (settings.contains("autocorrect/dictionary")) {
+    int count = settings.beginReadArray("layouts/languages");
+    settings.endArray();
+    if (count < 1) {
+        settings.beginWriteArray("layouts/languages");
+        settings.setArrayIndex(0);
+
         QStringList dictionaries;
         QDir dir("/usr/share/hunspell");
         for (QFileInfo file : dir.entryInfoList(QDir::Files)) {
@@ -30,20 +35,30 @@ int main(int argc, char *argv[])
         }
 
         if (dictionaries.contains("en")) {
-            settings.setValue("autocorrect/dictionary", "en");
+            settings.setValue("name", "English");
+            settings.setValue("dictionary", "en");
         } else if (dictionaries.contains("en_US")) {
-            settings.setValue("autocorrect/dictionary", "en_US");
+            settings.setValue("dictionary", "en_US");
+            settings.setValue("name", "English (US)");
         } else if (dictionaries.contains("en_GB")) {
-            settings.setValue("autocorrect/dictionary", "en_GB");
+            settings.setValue("dictionary", "en_GB");
+            settings.setValue("name", "English (GB)");
         } else if (dictionaries.contains("en_AU")) {
-            settings.setValue("autocorrect/dictionary", "en_AU");
+            settings.setValue("dictionary", "en_AU");
+            settings.setValue("name", "English (AU)");
         } else if (dictionaries.contains("en_NZ")) {
-            settings.setValue("autocorrect/dictionary", "en_NZ");
+            settings.setValue("dictionary", "en_NZ");
+            settings.setValue("name", "English (NZ)");
         } else if (dictionaries.contains("en_AU")) {
-            settings.setValue("autocorrect/dictionary", "en_CA");
+            settings.setValue("dictionary", "en_CA");
+            settings.setValue("name", "English (CA)");
         } else if (dictionaries.count() > 0) {
-            settings.setValue("autocorrect/dictionary", dictionaries.first());
+            settings.setValue("dictionary", dictionaries.first());
+            settings.setValue("name", "Keyboard");
         }
+        settings.setValue("layout", "enUS");
+
+        settings.endArray();
     }
 
     state = new KeyboardState;

@@ -38,6 +38,7 @@ public:
     void setKeyboardType(QString type);
     void setPredictive(bool predictive);
     void changeKeyboard(Layout::Layouts layout);
+    void changeToDefaultKeyboard();
 
 private slots:
     void pressKey();
@@ -79,6 +80,8 @@ private slots:
     void changeGeometry();
 
     void on_emojiButton_clicked();
+
+    void on_languageButton_pressed();
 
     signals:
     void keyboardVisibleChanged(bool isVisible);
