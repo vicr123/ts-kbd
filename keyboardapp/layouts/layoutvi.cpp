@@ -21,7 +21,7 @@ LayoutVI::LayoutVI(QWidget *parent) :
     this->setAttribute(Qt::WA_AcceptTouchEvents);
 
     connect(ui->shift, &QPushButton::toggled, [=](bool checked) {
-        if (checked) {
+        /*if (checked) {
             ui->qButton->setText("Q");
             ui->wButton->setText("W");
             ui->eButton->setText("E");
@@ -79,7 +79,7 @@ LayoutVI::LayoutVI(QWidget *parent) :
             ui->bButton->setText("b");
             ui->nButton->setText("n");
             ui->mButton->setText("m");
-        }
+        }*/
 
         updateSupplementaryCharacters();
 

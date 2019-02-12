@@ -3,6 +3,9 @@
 #include <QDebug>
 #include <QTimer>
 #include "supplementarykeypopup.h"
+#include "keyboardstate.h"
+
+extern KeyboardState* state;
 
 struct KeyButtonPrivate {
     QStringList supplementaryCharacters;
@@ -10,6 +13,9 @@ struct KeyButtonPrivate {
     QTimer* supplementaryPopupTimer;
 
     QPoint oldTopLeft;
+
+    QString shiftedOutput;
+    QString normalOutput;
 };
 
 KeyButton::KeyButton(QWidget* parent) : QPushButton(parent)
@@ -33,6 +39,25 @@ KeyButton::KeyButton(QWidget* parent) : QPushButton(parent)
             d->keyPopup->setButtons(buttons);
 
             d->keyPopup->show();
+        }
+    });
+
+    connect(state, &KeyboardState::shiftChanged, this, [=] {
+        if (d->shiftedOutput != "") {
+            if (state->capsLock() || state->shift()) {
+                QPushButton::setText(d->shiftedOutput);
+            } else {
+                QPushButton::setText(d->normalOutput);
+            }
+        }
+    });
+    connect(state, &KeyboardState::capsLockChanged, this, [=] {
+        if (d->shiftedOutput != "") {
+            if (state->capsLock() || state->shift()) {
+                QPushButton::setText(d->shiftedOutput);
+            } else {
+                QPushButton::setText(d->normalOutput);
+            }
         }
     });
 }
@@ -95,4 +120,17 @@ bool KeyButton::event(QEvent* event) {
 
 void KeyButton::setSupplementaryCharacters(QStringList characters) {
     d->supplementaryCharacters = characters;
+}
+
+void KeyButton::setShiftedOutput(QString shifted) {
+    d->shiftedOutput = shifted;
+}
+
+QString KeyButton::shiftedOutput() {
+    return d->shiftedOutput;
+}
+
+void KeyButton::setText(QString text) {
+    QPushButton::setText(text);
+    d->normalOutput = text;
 }

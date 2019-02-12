@@ -1,39 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>LayoutUS</class>
- <widget class="QWidget" name="LayoutUS">
+ <class>LayoutUK</class>
+ <widget class="QWidget" name="LayoutUK">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>904</width>
-    <height>122</height>
+    <height>119</height>
    </rect>
-  </property>
-  <property name="font">
-   <font>
-    <pointsize>15</pointsize>
-   </font>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="spacing">
-    <number>0</number>
-   </property>
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
    <item>
     <layout class="QHBoxLayout" name="topLayout">
      <property name="spacing">
@@ -51,13 +31,13 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">q</string>
+        <string>й</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">Q</string>
+        <string notr="true">Й</string>
        </property>
       </widget>
      </item>
@@ -70,13 +50,13 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">w</string>
+        <string>ц</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">W</string>
+        <string notr="true">Ц</string>
        </property>
       </widget>
      </item>
@@ -89,13 +69,13 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">e</string>
+        <string>у</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">E</string>
+        <string notr="true">У</string>
        </property>
       </widget>
      </item>
@@ -108,13 +88,13 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">r</string>
+        <string>к</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">R</string>
+        <string notr="true">К</string>
        </property>
       </widget>
      </item>
@@ -127,13 +107,13 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">t</string>
+        <string>е</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">T</string>
+        <string notr="true">Е</string>
        </property>
       </widget>
      </item>
@@ -146,13 +126,32 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">y</string>
+        <string>н</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">Y</string>
+        <string notr="true">Н</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="KeyButton" name="pushButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>г</string>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+       <property name="shiftedOutput" stdset="0">
+        <string notr="true">Г</string>
        </property>
       </widget>
      </item>
@@ -175,13 +174,13 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">u</string>
+        <string>ш</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">U</string>
+        <string notr="true">Ш</string>
        </property>
       </widget>
      </item>
@@ -194,13 +193,13 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">i</string>
+        <string>щ</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">I</string>
+        <string notr="true">Щ</string>
        </property>
       </widget>
      </item>
@@ -213,13 +212,13 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">o</string>
+        <string>з</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">O</string>
+        <string notr="true">З</string>
        </property>
       </widget>
      </item>
@@ -232,13 +231,32 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">p</string>
+        <string>х</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">P</string>
+        <string notr="true">Х</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="KeyButton" name="pushButton_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>ї</string>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+       <property name="shiftedOutput" stdset="0">
+        <string notr="true">Ї</string>
        </property>
       </widget>
      </item>
@@ -270,22 +288,6 @@
       <number>0</number>
      </property>
      <item>
-      <spacer name="leftSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
       <widget class="KeyButton" name="aButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -294,13 +296,13 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">a</string>
+        <string>ф</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">A</string>
+        <string notr="true">Ф</string>
        </property>
       </widget>
      </item>
@@ -313,13 +315,13 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">s</string>
+        <string>і</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">S</string>
+        <string notr="true">І</string>
        </property>
       </widget>
      </item>
@@ -332,13 +334,13 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">d</string>
+        <string>в</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">D</string>
+        <string notr="true">В</string>
        </property>
       </widget>
      </item>
@@ -351,13 +353,13 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">f</string>
+        <string>а</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">F</string>
+        <string notr="true">А</string>
        </property>
       </widget>
      </item>
@@ -370,13 +372,51 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">g</string>
+        <string>п</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">G</string>
+        <string notr="true">П</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="KeyButton" name="pushButton_4">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>р</string>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+       <property name="shiftedOutput" stdset="0">
+        <string notr="true">Р</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="KeyButton" name="pushButton_3">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>о</string>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+       <property name="shiftedOutput" stdset="0">
+        <string notr="true">О</string>
        </property>
       </widget>
      </item>
@@ -399,13 +439,13 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">h</string>
+        <string>л</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">H</string>
+        <string notr="true">Л</string>
        </property>
       </widget>
      </item>
@@ -418,13 +458,13 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">j</string>
+        <string>д</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">J</string>
+        <string notr="true">Д</string>
        </property>
       </widget>
      </item>
@@ -437,13 +477,13 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">k</string>
+        <string>ж</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">K</string>
+        <string notr="true">Ж</string>
        </property>
       </widget>
      </item>
@@ -456,13 +496,32 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">l</string>
+        <string>є</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">L</string>
+        <string notr="true">Є</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="KeyButton" name="pushButton_5">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>'</string>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+       <property name="shiftedOutput" stdset="0">
+        <string notr="true"/>
        </property>
       </widget>
      </item>
@@ -486,22 +545,6 @@
         <bool>true</bool>
        </property>
       </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
      </item>
     </layout>
    </item>
@@ -542,13 +585,13 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">z</string>
+        <string>я</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">Z</string>
+        <string notr="true">Я</string>
        </property>
       </widget>
      </item>
@@ -561,13 +604,13 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">x</string>
+        <string>ч</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">X</string>
+        <string notr="true">Ч</string>
        </property>
       </widget>
      </item>
@@ -580,13 +623,13 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">c</string>
+        <string>с</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">C</string>
+        <string notr="true">С</string>
        </property>
       </widget>
      </item>
@@ -599,13 +642,51 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">v</string>
+        <string>м</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">V</string>
+        <string notr="true">М</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="KeyButton" name="pushButton_7">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>и</string>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+       <property name="shiftedOutput" stdset="0">
+        <string notr="true">И</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="KeyButton" name="pushButton_6">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>т</string>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+       <property name="shiftedOutput" stdset="0">
+        <string notr="true">Т</string>
        </property>
       </widget>
      </item>
@@ -628,13 +709,13 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">b</string>
+        <string>ь</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">B</string>
+        <string notr="true">Ь</string>
        </property>
       </widget>
      </item>
@@ -647,13 +728,13 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">n</string>
+        <string>б</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">N</string>
+        <string notr="true">Б</string>
        </property>
       </widget>
      </item>
@@ -666,13 +747,32 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">m</string>
+        <string>ю</string>
        </property>
        <property name="flat">
         <bool>true</bool>
        </property>
        <property name="shiftedOutput" stdset="0">
-        <string notr="true">M</string>
+        <string notr="true">Ю</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="KeyButton" name="pushButton_8">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>ґ</string>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+       <property name="shiftedOutput" stdset="0">
+        <string notr="true">Ґ</string>
        </property>
       </widget>
      </item>

@@ -13,6 +13,10 @@ class KeyButton : public QPushButton
         explicit KeyButton(QWidget* parent = nullptr);
         ~KeyButton();
 
+        Q_PROPERTY(QString shiftedOutput READ shiftedOutput WRITE setShiftedOutput)
+
+        QString shiftedOutput();
+
     signals:
         void tapped();
         void typeSupplementary(QString supplementary);
@@ -22,6 +26,8 @@ class KeyButton : public QPushButton
 
     public slots:
         void setSupplementaryCharacters(QStringList characters);
+        void setShiftedOutput(QString shifted);
+        void setText(QString text);
 
     private:
         KeyButtonPrivate* d;

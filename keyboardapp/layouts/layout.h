@@ -11,6 +11,7 @@ class Layout : public QWidget
 
         enum Layouts {
             enUS = 0,
+            ukUA,
             viVN,
             urPK,
 

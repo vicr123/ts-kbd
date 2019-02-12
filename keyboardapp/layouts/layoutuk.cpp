@@ -1,5 +1,5 @@
-#include "layoutus.h"
-#include "ui_layoutus.h"
+#include "layoutuk.h"
+#include "ui_layoutuk.h"
 
 #include <QSoundEffect>
 #include <QDebug>
@@ -12,9 +12,9 @@
 extern KeyboardState* state;
 extern float getDPIScaling();
 
-LayoutUS::LayoutUS(QWidget *parent) :
+LayoutUK::LayoutUK(QWidget *parent) :
     Layout(parent),
-    ui(new Ui::LayoutUS)
+    ui(new Ui::LayoutUK)
 {
     ui->setupUi(this);
 
@@ -55,7 +55,6 @@ LayoutUS::LayoutUS(QWidget *parent) :
 
     buttonIterate(this);
     ui->returnButton->setFixedWidth(ui->returnButton->sizeHint().width() + 40 * getDPIScaling());
-    ui->leftSpacer->changeSize(40 * getDPIScaling(), 0, QSizePolicy::Fixed);
 
     QBoxLayout* layout = new QBoxLayout(QBoxLayout::LeftToRight);
     layout->addSpacing(50 * getDPIScaling());
@@ -78,40 +77,24 @@ LayoutUS::LayoutUS(QWidget *parent) :
     extraKey->setPalette(pal);
 }
 
-LayoutUS::~LayoutUS()
+LayoutUK::~LayoutUK()
 {
     delete ui;
 }
 
-Layout::Layouts LayoutUS::layoutType() {
-    return enUS;
+Layout::Layouts LayoutUK::layoutType() {
+    return ukUA;
 }
 
-void LayoutUS::updateSupplementaryCharacters() {
-    if (ui->shift->isChecked()) {
-        ui->aButton->setSupplementaryCharacters({"Á", "Â", "Ä", "À", "Ã"});
-        ui->eButton->setSupplementaryCharacters({"É", "Ê", "Ë", "È"});
-        ui->iButton->setSupplementaryCharacters({"Í", "Î", "Ï", "Ì"});
-        ui->oButton->setSupplementaryCharacters({"Ó", "Ô", "Ö", "Ò", "Õ"});
-        ui->uButton->setSupplementaryCharacters({"Ú", "Û", "Ü", "Ù"});
-        ui->yButton->setSupplementaryCharacters({"Ý"});
-        ui->cButton->setSupplementaryCharacters({"Ç"});
-    } else {
-        ui->aButton->setSupplementaryCharacters({"á", "â", "ä", "à", "ã"});
-        ui->eButton->setSupplementaryCharacters({"é", "ê", "ë", "è"});
-        ui->iButton->setSupplementaryCharacters({"í", "î", "ï", "ì"});
-        ui->oButton->setSupplementaryCharacters({"ó", "ô", "ö", "ò", "õ"});
-        ui->uButton->setSupplementaryCharacters({"ú", "û", "ü", "ù"});
-        ui->yButton->setSupplementaryCharacters({"ý"});
-        ui->cButton->setSupplementaryCharacters({"ç"});
-    }
+void LayoutUK::updateSupplementaryCharacters() {
+
 }
 
-void LayoutUS::buttonIterate(QWidget* wid) {
+void LayoutUK::buttonIterate(QWidget* wid) {
     for (QObject* widget : wid->children()) {
         if (qobject_cast<KeyButton*>(widget) != nullptr) {
             connect(qobject_cast<KeyButton*>(widget), SIGNAL(tapped()), this, SLOT(pressKey()));
-            connect(qobject_cast<KeyButton*>(widget), &KeyButton::typeSupplementary, this, &LayoutUS::typeString);
+            connect(qobject_cast<KeyButton*>(widget), &KeyButton::typeSupplementary, this, &LayoutUK::typeString);
         } else if (qobject_cast<QPushButton*>(widget) != nullptr) {
             connect(qobject_cast<QPushButton*>(widget), SIGNAL(clicked(bool)), this, SLOT(pressKey()));
         } else if (qobject_cast<QWidget*>(widget) != nullptr) {
@@ -120,7 +103,7 @@ void LayoutUS::buttonIterate(QWidget* wid) {
     }
 }
 
-void LayoutUS::pressKey() {
+void LayoutUK::pressKey() {
     QPushButton* button = (QPushButton*) sender();
     if (button == ui->shift) {
         if (state->capsLock()) {
@@ -166,11 +149,11 @@ void LayoutUS::pressKey() {
     emit typeKey(pressedKey);
 }
 
-void LayoutUS::resizeEvent(QResizeEvent* event) {
+void LayoutUK::resizeEvent(QResizeEvent* event) {
 
 }
 
-bool LayoutUS::event(QEvent* event) {
+bool LayoutUK::event(QEvent* event) {
     if (event->type() == QEvent::TouchBegin) {
         QTouchEvent* e = (QTouchEvent*) event;
         QPoint touchPoint = e->touchPoints().first().pos().toPoint();

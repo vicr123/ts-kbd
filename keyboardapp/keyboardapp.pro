@@ -48,7 +48,8 @@ SOURCES += main.cpp\
     layouts/layoutemoji.cpp \
     supplementarykeypopup.cpp \
     layouts/layoutvi.cpp \
-    layouts/layoutur.cpp
+    layouts/layoutur.cpp \
+    layouts/layoutuk.cpp
 
 HEADERS  += \
     keyboardwindow.h \
@@ -65,7 +66,8 @@ HEADERS  += \
     layouts/layoutemoji.h \
     supplementarykeypopup.h \
     layouts/layoutvi.h \
-    layouts/layoutur.h
+    layouts/layoutur.h \
+    layouts/layoutuk.h
 
 FORMS    += \
     keyboardwindow.ui \
@@ -76,7 +78,8 @@ FORMS    += \
     layouts/layoutnumeric.ui \
     layouts/layoutemoji.ui \
     supplementarykeypopup.ui \
-    layouts/layoutur.ui
+    layouts/layoutur.ui \
+    layouts/layoutuk.ui
 
 RESOURCES += \
     resources.qrc

@@ -13,6 +13,7 @@
 #include "layouts/layoutus.h"
 #include "layouts/layoutvi.h"
 #include "layouts/layoutur.h"
+#include "layouts/layoutuk.h"
 #include "layouts/layoutsym.h"
 #include "layouts/layoutnumeric.h"
 #include "layouts/layoutemoji.h"
@@ -70,6 +71,7 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
     LayoutUS* usLayout = new LayoutUS();
     LayoutVI* viLayout = new LayoutVI();
     LayoutUR* urLayout = new LayoutUR();
+    LayoutUK* ukLayout = new LayoutUK();
     LayoutSym* symLayout = new LayoutSym();
     LayoutNumeric* numLayout = new LayoutNumeric();
     LayoutEmoji* emojiLayout = new LayoutEmoji();
@@ -78,6 +80,7 @@ KeyboardWindow::KeyboardWindow(QWidget *parent) :
         usLayout,
         viLayout,
         urLayout,
+        ukLayout,
         symLayout,
         numLayout,
         emojiLayout
