@@ -167,6 +167,12 @@ void KeyboardWindow::pressKey() {
             pressKeySym(XK_BackSpace);
             pressKeySym(XK_period);
             spaceReplacementDone = true;
+
+            if (!state->capsLock()) {
+                QTimer::singleShot(0, [=] {
+                    state->setShift(true);
+                });
+            }
         }
 
         spacePressed = QDateTime::currentDateTime();
@@ -338,7 +344,7 @@ void KeyboardWindow::pressLetter(QString letter) {
     XTestFakeKeyEvent(QX11Info::display(), XKeysymToKeycode(QX11Info::display(), XK_Control_L), false, 0);
 
     //Reset the old clipboard data
-    QTimer::singleShot(100, [=] {
+    QTimer::singleShot(1000, [=] {
         QApplication::clipboard()->setMimeData(newData);
     });
 }
@@ -788,13 +794,16 @@ void KeyboardWindow::on_languageButton_pressed()
     }
     settings.endArray();
 
-    menu->addSection(tr("theShell Keyboard"));
-    menu->addAction(QIcon::fromTheme("configure"), tr("Settings"), [=] {
-        ui->settingsButton->click();
-    });
-    menu->addAction(QIcon::fromTheme("application-exit"), tr("Exit"), [=] {
-        QApplication::exit();
-    });
+    if (geteuid() != 0) {
+        //Don't want the user to open settings in theDM
+        menu->addSection(tr("theShell Keyboard"));
+        menu->addAction(QIcon::fromTheme("configure"), tr("Settings"), [=] {
+            ui->settingsButton->click();
+        });
+        menu->addAction(QIcon::fromTheme("application-exit"), tr("Exit"), [=] {
+            QApplication::exit();
+        });
+    }
 
     ui->languageButton->setMenu(menu);
 }
