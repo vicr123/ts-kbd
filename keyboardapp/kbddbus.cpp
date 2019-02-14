@@ -5,13 +5,41 @@
 extern KeyboardWindow* mainWindow;
 extern KeyboardState* state;
 
+struct KbdDbusPrivate {
+    QTimer* kbdBuffer;
+    bool show = false;
+};
+
 KbdDbus::KbdDbus(QObject *parent) : QObject(parent)
 {
+    d = new KbdDbusPrivate();
+
     new TskbdAdaptor(this);
     QDBusConnection dbus = QDBusConnection::sessionBus();
     dbus.registerObject("/org/thesuite/tskbd", this);
 
     connect(mainWindow, SIGNAL(keyboardVisibleChanged(bool)), this, SIGNAL(keyboardVisibleChanged(bool)));
+
+    d->kbdBuffer = new QTimer();
+    d->kbdBuffer->setInterval(100);
+    d->kbdBuffer->setSingleShot(true);
+    connect(d->kbdBuffer, &QTimer::timeout, [=] {
+        if (d->show) {
+            if (!mainWindow->isVisible()) {
+                mainWindow->show();
+                mainWindow->raise();
+            }
+        } else {
+            if (mainWindow->isVisible()) {
+                mainWindow->hide();
+            }
+        }
+    });
+}
+
+KbdDbus::~KbdDbus() {
+    delete d->kbdBuffer;
+    delete d;
 }
 
 bool KbdDbus::reg() {
@@ -19,12 +47,15 @@ bool KbdDbus::reg() {
 }
 
 void KbdDbus::showKeyboard() {
-    mainWindow->show();
-    mainWindow->raise();
+    d->show = true;
+    if (d->kbdBuffer->isActive()) d->kbdBuffer->stop();
+    d->kbdBuffer->start();
 }
 
 void KbdDbus::hideKeyboard() {
-    mainWindow->hide();
+    d->show = false;
+    if (d->kbdBuffer->isActive()) d->kbdBuffer->stop();
+    d->kbdBuffer->start();
 }
 
 int KbdDbus::height() {

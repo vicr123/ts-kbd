@@ -1,4 +1,5 @@
 TEMPLATE = subdirs
 
 SUBDIRS += keyboardapp \
-    inputcontext
+    inputcontext \
+    gtk-immodule

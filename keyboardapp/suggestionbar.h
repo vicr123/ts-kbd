@@ -12,42 +12,37 @@ namespace Ui {
 class SuggestionBar;
 }
 
+struct SuggestionBarPrivate;
 class SuggestionBar : public QWidget
 {
     Q_OBJECT
 
-public:
-    explicit SuggestionBar(QWidget *parent = nullptr);
-    ~SuggestionBar();
+    public:
+        explicit SuggestionBar(QWidget *parent = nullptr);
+        ~SuggestionBar();
 
-    bool hasAutocorrection();
-    QPushButton* clearButton();
+        bool hasAutocorrection();
+        QPushButton* clearButton();
 
-public slots:
-    void pushLetter(QString letter);
-    void backspace();
-    void reset();
-    void acceptAutocorrection();
+    public slots:
+        void pushLetter(QString letter);
+        void backspace();
+        void reset();
+        void acceptAutocorrection();
 
-    void updateSuggestions();
-    void changeDictionary(QString dictionaryName);
+        void updateSuggestions();
+        void changeDictionary(QString dictionaryName);
 
-signals:
-    void wordSelected(QString word, int charactersToBackspace);
+    signals:
+        void wordSelected(QString word, int charactersToBackspace);
 
     private slots:
-    void on_clearSuggestionBarButton_clicked();
+        void on_clearSuggestionBarButton_clicked();
 
     private:
-    Ui::SuggestionBar *ui;
+        Ui::SuggestionBar *ui;
 
-    QList<KeyButton*> suggestions;
-
-    QString currentWord;
-    QString tentativeCorrection;
-    Hunspell* dictionary;
-
-    QSettings settings;
+        SuggestionBarPrivate* d;
 };
 
 #endif // SUGGESTIONBAR_H

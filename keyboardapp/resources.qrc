@@ -5,5 +5,6 @@
     </qresource>
     <qresource prefix="/">
         <file>data/emoji-test.txt</file>
+        <file>data/offensive-words.txt</file>
     </qresource>
 </RCC>
